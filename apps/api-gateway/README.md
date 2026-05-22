@@ -8,14 +8,26 @@ The backend is designed using modular and production-inspired architecture princ
 
 ---
 
-
-
 # Running the Server
 
 ## Install Dependencies
 
 ```bash
+go install golang.org/x/tools/cmd/goimports@latest
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s latest
+go install github.com/pressly/goose/v3/cmd/goose@latest
 go mod tidy
+```
+
+## Creating Tables
+
+```bash
+goose -dir migrations postgres "<supabase_url>" up
+```
+
+## Deleting Tables
+```bash
+goose -dir migrations postgres "<supabase_url>" down
 ```
 
 ## Start Server
