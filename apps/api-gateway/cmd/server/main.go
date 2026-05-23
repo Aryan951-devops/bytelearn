@@ -5,29 +5,38 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/auth"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/config"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/database"
 )
 
 func main() {
-	cfg := config.LoadConfig()
+	config.LoadConfig()
 
-	database.ConnectDB(cfg.DatabaseURL)
+	database.ConnectDB(config.AppConfig.DatabaseURL)
 
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
 
 	router.SetTrustedProxies(nil)
 
+	// Health Check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status":  "success",
-			"message": "ByteLearn API running",
+			"status": "ok",
 		})
 	})
 
-	log.Printf("Server running on port %s", cfg.Port)
+	// API Versioning
+	v1 := router.Group("/api/v1")
 
-	if err := router.Run(":" + cfg.Port); err != nil {
+	// Register Feature Routes
+	auth.RegisterRoutes(v1)
+
+	log.Printf("Server running on port %s", config.AppConfig.Port)
+
+	if err := router.Run(":" + config.AppConfig.Port); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
 }

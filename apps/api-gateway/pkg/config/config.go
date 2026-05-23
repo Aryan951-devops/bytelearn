@@ -10,17 +10,21 @@ import (
 type Config struct {
 	Port        string
 	DatabaseURL string
+	JWT_SECRET  string
 }
 
-func LoadConfig() *Config {
+var AppConfig Config
+
+func LoadConfig() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println(".env file not found")
 	}
 
-	return &Config{
+	AppConfig = Config{
 		Port:        getEnv("PORT", "8080"),
 		DatabaseURL: getEnv("DATABASE_URL", ""),
+		JWT_SECRET:  getEnv("JWT_SECRET", ""),
 	}
 }
 
