@@ -14,13 +14,13 @@ type User struct {
 	Username     string    `json:"username"`
 	Name         string    `json:"name"`
 	Email        string    `json:"email"`
-	PhoneNo      string    `json:"phone_no"`
-	ProfilePic   string    `json:"profile_pic"`
+	PhoneNo      *string   `json:"phone_no"`
+	ProfilePic   *string   `json:"profile_pic"`
 	PasswordHash string    `json:"-"`
-	City         string    `json:"city"`
-	State        string    `json:"state"`
-	Pincode      string    `json:"pincode"`
-	Role         string    `json:"role"`
+	City         *string   `json:"city"`
+	State        *string   `json:"state"`
+	Pincode      *string   `json:"pincode"`
+	Role         string    `json:"-"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }

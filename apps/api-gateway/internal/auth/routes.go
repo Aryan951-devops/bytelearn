@@ -9,4 +9,5 @@ func RegisterRoutes(router *gin.RouterGroup) {
 	auth.POST("/register", RegisterHandler)
 	auth.POST("/login", LoginHandler)
 	auth.POST("/logout", LogoutHandler)
+	auth.POST("/verifytoken", AuthMiddleware(), VerifyAccessToken)
 }

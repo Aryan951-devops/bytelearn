@@ -27,7 +27,8 @@ func RegisterHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"user": user,
+		"message": "user registered successfully",
+		"user":    user,
 	})
 }
 
@@ -64,5 +65,20 @@ func LogoutHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "logged out successfully",
+	})
+}
+
+func VerifyAccessToken(c *gin.Context) {
+	_, exists := c.Get("user")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid access token",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "access token is valid",
 	})
 }
