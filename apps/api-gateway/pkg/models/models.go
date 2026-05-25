@@ -28,9 +28,9 @@ type User struct {
 type Video struct {
 	ID              string    `json:"video_id"`
 	Title           string    `json:"title"`
-	Description     string    `json:"description"`
+	Description     *string   `json:"description"`
 	VideofileUrl    string    `json:"videofile_url"`
-	ThumbnailUrl    string    `json:"thumbnail_url"`
+	ThumbnailUrl    *string   `json:"thumbnail_url"`
 	DurationSeconds int32     `json:"duration_seconds"`
 	Views           int64     `json:"views"`
 	UploadedBy      string    `json:"uploaded_by"`

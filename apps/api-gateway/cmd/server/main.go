@@ -7,6 +7,7 @@ import (
 
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/auth"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/user"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/video"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/config"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/database"
 )
@@ -35,6 +36,7 @@ func main() {
 	// Register Feature Routes
 	auth.RegisterRoutes(v1)
 	user.RegisterRoutes(v1)
+	video.RegisterRoutes(v1)
 
 	log.Printf("Server running on port %s", config.AppConfig.Port)
 
