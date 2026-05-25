@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,10 +27,12 @@ func RegisterHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "user registered successfully",
-		"user":    user,
-	})
+	c.JSON(http.StatusCreated, utils.NewResponse(
+		"user registered successfully",
+		gin.H{
+			"user": user,
+		},
+	))
 }
 
 func LoginHandler(c *gin.Context) {
@@ -54,18 +57,20 @@ func LoginHandler(c *gin.Context) {
 
 	c.SetCookie("access_token", token, 3600*24*7, "/", "", false, true) // secure=false for localhost
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "login successful",
-	})
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"login successful",
+		nil,
+	))
 }
 
 func LogoutHandler(c *gin.Context) {
 
 	c.SetCookie("access_token", "", -1, "/", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "logged out successfully",
-	})
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"logged out successfully",
+		nil,
+	))
 }
 
 func VerifyAccessToken(c *gin.Context) {
@@ -78,7 +83,8 @@ func VerifyAccessToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "access token is valid",
-	})
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"access token is valid",
+		nil,
+	))
 }

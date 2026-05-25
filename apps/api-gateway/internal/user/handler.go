@@ -46,9 +46,10 @@ func ChangePasswordHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "password updated successfully.",
-	})
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"password updated successfully",
+		nil,
+	))
 }
 
 func GetUserHandler(c *gin.Context) {
@@ -69,11 +70,12 @@ func GetUserHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "user data fetched successfully",
-		"user":    user,
-	})
-
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"user data fetched successfully",
+		gin.H{
+			"user": user,
+		},
+	))
 }
 
 func UpdateAccountHandler(c *gin.Context) {
@@ -143,9 +145,10 @@ func UpdateAccountHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "user data updated successfully",
-		"user":    updated_user,
-	})
-
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"user data updated successfully",
+		gin.H{
+			"user": updated_user,
+		},
+	))
 }

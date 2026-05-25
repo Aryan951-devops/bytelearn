@@ -3,6 +3,7 @@ package video
 import (
 	"net/http"
 
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,9 +18,11 @@ func GetAllVideosHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "all videos fetched succesfully",
-		"videos":  videos,
-	})
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"all videos fetched successfully",
+		gin.H{
+			"videos": videos,
+		},
+	))
 
 }

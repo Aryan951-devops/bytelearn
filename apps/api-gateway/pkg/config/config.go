@@ -16,11 +16,12 @@ type CloudinaryConfig struct {
 }
 
 type Config struct {
-	Port          string
-	DatabaseURL   string
-	JWT_SECRET    string
-	Cloudinary    CloudinaryConfig
-	MediaUploader mediauploader.MediaUploader
+	Port            string
+	DatabaseURL     string
+	JWT_SECRET      string
+	ALLOWED_ORIGINS string
+	Cloudinary      CloudinaryConfig
+	MediaUploader   mediauploader.MediaUploader
 }
 
 var AppConfig Config
@@ -32,9 +33,10 @@ func LoadConfig() {
 	}
 
 	AppConfig = Config{
-		Port:        getEnv("PORT", "8080"),
-		DatabaseURL: getEnv("DATABASE_URL", ""),
-		JWT_SECRET:  getEnv("JWT_SECRET", ""),
+		Port:            getEnv("PORT", "8080"),
+		DatabaseURL:     getEnv("DATABASE_URL", ""),
+		JWT_SECRET:      getEnv("JWT_SECRET", ""),
+		ALLOWED_ORIGINS: getEnv("ALLOWED_ORIGINS", ""),
 		Cloudinary: CloudinaryConfig{
 			CLOUDINARY_CLOUD_NAME: getEnv("CLOUDINARY_CLOUD_NAME", ""),
 			CLOUDINARY_API_KEY:    getEnv("CLOUDINARY_API_KEY", ""),

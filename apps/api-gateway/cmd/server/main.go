@@ -2,7 +2,10 @@ package main
 
 import (
 	"log"
+	"strings"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/auth"
@@ -22,6 +25,16 @@ func main() {
 	router.Use(gin.Recovery())
 
 	router.SetTrustedProxies(nil)
+
+	allowedOrigins := strings.Split(config.AppConfig.ALLOWED_ORIGINS, ",")
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     allowedOrigins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// Health Check
 	router.GET("/health", func(c *gin.Context) {
