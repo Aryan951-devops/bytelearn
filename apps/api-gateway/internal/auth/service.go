@@ -29,6 +29,7 @@ func RegisterUser(req RegisterRequest) (*models.User, error) {
 		Name:         req.Name,
 		Email:        req.Email,
 		PasswordHash: string(hashedPassword),
+		Role:         req.Role,
 	}
 
 	err = CreateUser(user)

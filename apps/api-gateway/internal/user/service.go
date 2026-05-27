@@ -52,13 +52,14 @@ func UpdateUserProfile(req UpdateAccountRequest, user_id uuid.UUID,
 	}
 
 	if tempPath != nil {
-		imageURL, err := config.AppConfig.MediaUploader.Upload(*tempPath)
+		imageData := config.AppConfig.MediaUploader.UploadProfilePic(*tempPath)
 
-		if err != nil {
-			return nil, err
+		if imageData.Err != nil {
+			return nil, imageData.Err
 		}
 
-		user.ProfilePic = &imageURL
+		user.ProfilePic_Url = &imageData.PublicURL
+		user.ProfilePic_PublicID = &imageData.PublicID
 	}
 
 	updated_user, err := UpdateUserByID(&user)

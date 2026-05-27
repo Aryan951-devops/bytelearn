@@ -16,33 +16,37 @@ func ChangePasswordHandler(c *gin.Context) {
 
 	var req ChangePasswordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
 		return
 	}
 
 	ctxUser, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Session user context not found",
-		})
+		c.JSON(http.StatusUnauthorized, utils.NewResponse(
+			"Session user context not found",
+			nil,
+		))
 		return
 	}
 
 	user, ok := ctxUser.(*models.User)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal context type mismatch",
-		})
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			"Internal context type mismatch",
+			nil,
+		))
 		return
 	}
 
 	err := ChangePassword(req.NewPassword, user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
 		return
 	}
 
@@ -56,17 +60,19 @@ func GetUserHandler(c *gin.Context) {
 
 	ctxUser, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Session user context not found",
-		})
+		c.JSON(http.StatusUnauthorized, utils.NewResponse(
+			"Session user context not found",
+			nil,
+		))
 		return
 	}
 
 	user, ok := ctxUser.(*models.User)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal context type mismatch",
-		})
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			"Internal context type mismatch",
+			nil,
+		))
 		return
 	}
 
@@ -82,25 +88,28 @@ func UpdateAccountHandler(c *gin.Context) {
 
 	var req UpdateAccountRequest
 	if err := c.ShouldBind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid request payload",
-		})
+		c.JSON(http.StatusBadRequest, utils.NewResponse(
+			"invalid request payload",
+			nil,
+		))
 		return
 	}
 
 	ctxUser, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Session user context not found",
-		})
+		c.JSON(http.StatusUnauthorized, utils.NewResponse(
+			"Session user context not found",
+			nil,
+		))
 		return
 	}
 
 	user, ok := ctxUser.(*models.User)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal context type mismatch",
-		})
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			"Internal context type mismatch",
+			nil,
+		))
 		return
 	}
 
@@ -110,9 +119,10 @@ func UpdateAccountHandler(c *gin.Context) {
 
 	if err == nil {
 		if err := utils.IsImageAllowed(file); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
+			c.JSON(http.StatusBadRequest, utils.NewResponse(
+				err.Error(),
+				nil,
+			))
 			return
 		}
 
@@ -126,9 +136,10 @@ func UpdateAccountHandler(c *gin.Context) {
 		)
 
 		if err := c.SaveUploadedFile(file, tempPath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "failed to save uploaded file",
-			})
+			c.JSON(http.StatusInternalServerError, utils.NewResponse(
+				"failed to save uploaded file",
+				nil,
+			))
 			return
 		}
 		defer os.Remove(tempPath)
@@ -139,9 +150,10 @@ func UpdateAccountHandler(c *gin.Context) {
 	}
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to update account",
-		})
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			"failed to update account",
+			nil,
+		))
 		return
 	}
 

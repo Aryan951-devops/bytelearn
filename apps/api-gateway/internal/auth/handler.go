@@ -12,18 +12,20 @@ func RegisterHandler(c *gin.Context) {
 	var req RegisterRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
 		return
 	}
 
 	user, err := RegisterUser(req)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
 		return
 	}
 
@@ -40,18 +42,20 @@ func LoginHandler(c *gin.Context) {
 	var req LoginRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
 		return
 	}
 
 	token, err := LoginUser(req)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusUnauthorized, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
 		return
 	}
 
@@ -77,9 +81,10 @@ func VerifyAccessToken(c *gin.Context) {
 	_, exists := c.Get("user")
 
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid access token",
-		})
+		c.JSON(http.StatusUnauthorized, utils.NewResponse(
+			"invalid access token",
+			nil,
+		))
 		return
 	}
 

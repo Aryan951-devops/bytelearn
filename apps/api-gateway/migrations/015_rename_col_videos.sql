@@ -7,3 +7,5 @@
 ALTER TABLE videos RENAME column video_file_url TO videofile_url;
 
 -- +goose Down
+
+ALTER TABLE videos RENAME videofile_url TO video_file_url;

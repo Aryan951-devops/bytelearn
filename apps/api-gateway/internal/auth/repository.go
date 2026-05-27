@@ -15,8 +15,8 @@ func GetUserByEmail(email string) (*models.User, error) {
 	query := `
 		SELECT 
 			user_id, username, name, email, phone_no, 
-			profile_pic, password_hash, city, state, 
-			pincode, role, created_at, updated_at 
+			profile_pic_url, profile_pic_public_id, password_hash,
+			city, state, pincode, role, created_at, updated_at
 		FROM users 
 		WHERE email = $1
 	`
@@ -27,7 +27,8 @@ func GetUserByEmail(email string) (*models.User, error) {
 		&user.Name,
 		&user.Email,
 		&user.PhoneNo,
-		&user.ProfilePic,
+		&user.ProfilePic_Url,
+		&user.ProfilePic_PublicID,
 		&user.PasswordHash,
 		&user.City,
 		&user.State,
@@ -51,8 +52,8 @@ func GetUserByUserId(id uuid.UUID) (*models.User, error) {
 	query := `
 		SELECT 
 			user_id, username, name, email, phone_no, 
-			profile_pic, password_hash, city, state, 
-			pincode, role, created_at, updated_at 
+			profile_pic_url, profile_pic_public_id, password_hash,
+			city, state, pincode, role, created_at, updated_at
 		FROM users 
 		WHERE user_id = $1
 	`
@@ -63,7 +64,8 @@ func GetUserByUserId(id uuid.UUID) (*models.User, error) {
 		&user.Name,
 		&user.Email,
 		&user.PhoneNo,
-		&user.ProfilePic,
+		&user.ProfilePic_Url,
+		&user.ProfilePic_PublicID,
 		&user.PasswordHash,
 		&user.City,
 		&user.State,
@@ -87,9 +89,9 @@ func CreateUser(user *models.User) error {
 
 	query := `
 		INSERT INTO users (
-			username, name, email, password_hash
+			username, name, email, password_hash, role
 		)
-		VALUES ($1, $2, $3, $4)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING user_id
 	`
 
@@ -100,5 +102,6 @@ func CreateUser(user *models.User) error {
 		user.Name,
 		user.Email,
 		user.PasswordHash,
+		user.Role,
 	).Scan(&user.ID)
 }

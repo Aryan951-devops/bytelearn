@@ -10,45 +10,48 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID `json:"user_id"`
-	Username     string    `json:"username"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	PhoneNo      *string   `json:"phone_no"`
-	ProfilePic   *string   `json:"profile_pic"`
-	PasswordHash string    `json:"-"`
-	City         *string   `json:"city"`
-	State        *string   `json:"state"`
-	Pincode      *string   `json:"pincode"`
-	Role         string    `json:"-"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID                  uuid.UUID `json:"user_id"`
+	Username            string    `json:"username"`
+	Name                string    `json:"name"`
+	Email               string    `json:"email"`
+	PhoneNo             *string   `json:"phone_no"`
+	ProfilePic_Url      *string   `json:"profile_pic_url"`
+	ProfilePic_PublicID *string   `json:"-"`
+	PasswordHash        string    `json:"-"`
+	City                *string   `json:"city"`
+	State               *string   `json:"state"`
+	Pincode             *string   `json:"pincode"`
+	Role                string    `json:"role"`
+	CreatedAt           time.Time `json:"created_at"`
+	UpdatedAt           time.Time `json:"updated_at"`
 }
 
 type Video struct {
-	ID              string    `json:"video_id"`
-	Title           string    `json:"title"`
-	Description     *string   `json:"description"`
-	VideofileUrl    string    `json:"videofile_url"`
-	ThumbnailUrl    *string   `json:"thumbnail_url"`
-	DurationSeconds int32     `json:"duration_seconds"`
-	Views           int64     `json:"views"`
-	UploadedBy      string    `json:"uploaded_by"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID                 uuid.UUID `json:"video_id"`
+	Title              string    `json:"title"`
+	Description        *string   `json:"description"`
+	Videofile_Url      string    `json:"videofile_url"`
+	Videofile_PublicID string    `json:"-"`
+	Thumbnail_Url      *string   `json:"thumbnail_url"`
+	Thumbnail_PublicID *string   `json:"-"`
+	DurationSeconds    int32     `json:"duration_seconds"`
+	Views              int64     `json:"views"`
+	UploadedBy         uuid.UUID `json:"uploaded_by"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
 }
 
 type Comment struct {
-	ID        string    `json:"comment_id"`
-	VideoID   string    `json:"video_id"`
-	UserID    string    `json:"user_id"`
+	ID        uuid.UUID `json:"comment_id"`
+	VideoID   uuid.UUID `json:"video_id"`
+	UserID    uuid.UUID `json:"user_id"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Course struct {
-	ID          string    `json:"course_id"`
+	ID          uuid.UUID `json:"course_id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Category    string    `json:"category"`
@@ -57,69 +60,69 @@ type Course struct {
 }
 
 type Playlist struct {
-	ID          string    `json:"playlist_id"`
-	Type        string    `json:"type"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	UserID      string    `json:"user_id"`
-	CourseID    *string   `json:"course_id"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uuid.UUID  `json:"playlist_id"`
+	Type        string     `json:"type"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	UserID      uuid.UUID  `json:"user_id"`
+	CourseID    *uuid.UUID `json:"course_id"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type PlaylistVideo struct {
-	PlaylistID string    `json:"playlist_id"`
-	VideoID    string    `json:"video_id"`
+	PlaylistID uuid.UUID `json:"playlist_id"`
+	VideoID    uuid.UUID `json:"video_id"`
 	OrderIndex int32     `json:"order_index"` // Dictates sequence of streaming playback
 	CreatedAt  time.Time `json:"created_at"`
 }
 
 type Enrollment struct {
-	UserID    string    `json:"user_id"`
-	CourseID  string    `json:"course_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	CourseID  uuid.UUID `json:"course_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type WatchHistory struct {
-	UserID     string    `json:"user_id"`
-	VideoID    string    `json:"video_id"`
+	UserID     uuid.UUID `json:"user_id"`
+	VideoID    uuid.UUID `json:"video_id"`
 	ResumeTime int32     `json:"resume_time"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type VideoLike struct {
-	UserID    string    `json:"user_id"`
-	VideoID   string    `json:"video_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	VideoID   uuid.UUID `json:"video_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type CommentLike struct {
-	UserID    string    `json:"user_id"`
-	CommentID string    `json:"comment_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	CommentID uuid.UUID `json:"comment_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type CodingContest struct {
-	ID          string    `json:"contest_id"`
+	ID          uuid.UUID `json:"contest_id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	PlaylistID  string    `json:"playlist_id"`
+	PlaylistID  uuid.UUID `json:"playlist_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type CodingQuestion struct {
-	ID        string    `json:"question_id"`
+	ID        uuid.UUID `json:"question_id"`
 	Metadata  string    `json:"metadata"`
-	ContestID string    `json:"contest_id"`
+	ContestID uuid.UUID `json:"contest_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Submission struct {
-	ID          string    `json:"submission_id"`
-	QuestionID  string    `json:"question_id"`
-	UserID      string    `json:"user_id"`
+	ID          uuid.UUID `json:"submission_id"`
+	QuestionID  uuid.UUID `json:"question_id"`
+	UserID      uuid.UUID `json:"user_id"`
 	Code        string    `json:"code"`
 	Language    string    `json:"language"`
 	Verdict     string    `json:"verdict"`
@@ -145,9 +148,9 @@ func (j *JSONBMap) Scan(value interface{}) error {
 }
 
 type Quiz struct {
-	ID         string    `json:"quiz_id"`
+	ID         uuid.UUID `json:"quiz_id"`
 	Title      string    `json:"title"`
-	PlaylistID string    `json:"playlist_id"`                 // Binds quiz directly to course timeline modules
+	PlaylistID uuid.UUID `json:"playlist_id"`                 // Binds quiz directly to course timeline modules
 	Questions  JSONBMap  `json:"questions" gorm:"type:jsonb"` // Scalable schema-less database array storage
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`

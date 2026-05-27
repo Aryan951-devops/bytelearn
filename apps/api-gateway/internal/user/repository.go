@@ -42,13 +42,14 @@ func UpdateUserByID(user *models.User) (*models.User, error) {
 			city = COALESCE($2, city),
 			state = COALESCE($3, state),
 			pincode = COALESCE($4, pincode),
-			profile_pic = COALESCE($5, profile_pic),
+			profile_pic_url = COALESCE($5, profile_pic_url),
+			profile_pic_public_id = COALESCE($6, profile_pic_public_id),
 			updated_at = NOW()
-		WHERE user_id = $6
+		WHERE user_id = $7
 		RETURNING	
 			user_id, username, name, email, phone_no, 
-			profile_pic, password_hash, city, state, 
-			pincode, role, created_at, updated_at
+			profile_pic_url, profile_pic_public_id, password_hash,
+			city, state, pincode, role, created_at, updated_at
 	`
 	var updated_user models.User
 	err := database.DB.QueryRow(context.Background(),
@@ -57,7 +58,8 @@ func UpdateUserByID(user *models.User) (*models.User, error) {
 		user.City,
 		user.State,
 		user.Pincode,
-		user.ProfilePic,
+		user.ProfilePic_Url,
+		user.ProfilePic_PublicID,
 		user.ID,
 	).Scan(
 		&updated_user.ID,
@@ -65,7 +67,8 @@ func UpdateUserByID(user *models.User) (*models.User, error) {
 		&updated_user.Name,
 		&updated_user.Email,
 		&updated_user.PhoneNo,
-		&updated_user.ProfilePic,
+		&updated_user.ProfilePic_Url,
+		&updated_user.ProfilePic_PublicID,
 		&updated_user.PasswordHash,
 		&updated_user.City,
 		&updated_user.State,
