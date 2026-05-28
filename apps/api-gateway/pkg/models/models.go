@@ -53,8 +53,9 @@ type Comment struct {
 type Course struct {
 	ID          uuid.UUID `json:"course_id"`
 	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Category    string    `json:"category"`
+	Description *string   `json:"description"`
+	Category    *string   `json:"category"`
+	CreatedBy   uuid.UUID `json:"-"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -63,7 +64,7 @@ type Playlist struct {
 	ID          uuid.UUID  `json:"playlist_id"`
 	Type        string     `json:"type"`
 	Title       string     `json:"title"`
-	Description string     `json:"description"`
+	Description *string    `json:"description"`
 	UserID      uuid.UUID  `json:"user_id"`
 	CourseID    *uuid.UUID `json:"course_id"`
 	CreatedAt   time.Time  `json:"created_at"`

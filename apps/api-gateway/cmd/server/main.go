@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/auth"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/course"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/playlist"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/user"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/video"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/config"
@@ -50,6 +52,8 @@ func main() {
 	auth.RegisterRoutes(v1)
 	user.RegisterRoutes(v1)
 	video.RegisterRoutes(v1)
+	playlist.RegisterRoutes(v1)
+	course.RegisterRoutes(v1)
 
 	log.Printf("Server running on port %s", config.AppConfig.Port)
 

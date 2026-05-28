@@ -25,7 +25,7 @@ func FetchAllVideos() (*[]models.Video, error) {
 	}
 	defer rows.Close()
 
-	var videos []models.Video
+	videos := []models.Video{}
 
 	for rows.Next() {
 		var v models.Video
