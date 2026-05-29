@@ -33,7 +33,7 @@ type EducatorDetail struct {
 	ID             uuid.UUID `json:"user_id"`
 	Username       string    `json:"username"`
 	Name           string    `json:"name"`
-	ProfilePic_Url string    `json:"profile_pic_url"`
+	ProfilePic_Url *string   `json:"profile_pic_url"`
 }
 
 type PlaylistPreview struct {

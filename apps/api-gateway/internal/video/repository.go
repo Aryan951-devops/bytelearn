@@ -10,6 +10,51 @@ import (
 	"github.com/google/uuid"
 )
 
+func FetchAllVideosOfUser(user_id uuid.UUID) (*[]models.Video, error) {
+	query := `
+		SELECT video_id, title, description,
+		videofile_url, videofile_public_id, thumbnail_url,
+		thumbnail_public_id, duration_seconds,
+		views, uploaded_by, created_at, updated_at
+		FROM videos
+		WHERE uploaded_by = $1
+	`
+
+	rows, err := database.DB.Query(context.Background(), query, user_id)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	defer rows.Close()
+
+	videos := []models.Video{}
+
+	for rows.Next() {
+		var v models.Video
+
+		err := rows.Scan(
+			&v.ID,
+			&v.Title,
+			&v.Description,
+			&v.Videofile_Url,
+			&v.Videofile_PublicID,
+			&v.Thumbnail_Url,
+			&v.Thumbnail_PublicID,
+			&v.DurationSeconds,
+			&v.Views,
+			&v.UploadedBy,
+			&v.CreatedAt,
+			&v.UpdatedAt,
+		)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+
+		videos = append(videos, v)
+	}
+
+	return &videos, nil
+}
+
 func FetchAllVideos() (*[]models.Video, error) {
 	query := `
 		SELECT video_id, title, description,

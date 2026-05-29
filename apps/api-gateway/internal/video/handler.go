@@ -32,6 +32,37 @@ func GetAllVideosHandler(c *gin.Context) {
 	))
 }
 
+func GetAllVideosOfUserHandler(c *gin.Context) {
+
+	ctxUser, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, utils.NewResponse(
+			"unauthorized",
+			nil,
+		))
+		return
+	}
+
+	user := ctxUser.(*models.User)
+
+	videos, err := GetAllVideosOfUserService(user.ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"user's all videos are fetched successfully",
+		gin.H{
+			"videos": videos,
+		},
+	))
+}
+
 func GetVideoHandler(c *gin.Context) {
 
 	videoId, err := uuid.Parse(c.Param("videoID"))

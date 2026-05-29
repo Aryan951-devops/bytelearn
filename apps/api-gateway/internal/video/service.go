@@ -24,6 +24,16 @@ func GetAllVideos() (*[]models.Video, error) {
 	return videos, nil
 }
 
+func GetAllVideosOfUserService(user_id uuid.UUID) (*[]models.Video, error) {
+	videos, err := FetchAllVideosOfUser(user_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return videos, nil
+}
+
 func GetVideo(video_id uuid.UUID) (*models.Video, error) {
 	video, err := FetchVideoByID(video_id)
 
