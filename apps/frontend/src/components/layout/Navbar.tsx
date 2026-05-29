@@ -7,6 +7,7 @@ import {
   User,
   X,
   ChevronDown,
+  LayoutDashboard, // Imported for use as an icon link
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
@@ -33,7 +34,6 @@ export function Navbar() {
     navigate('/login')
   }
 
-  // Close the profile menu dropdown when clicking outside of it
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -44,6 +44,7 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Modifying the shared links bundle to dynamically evaluate educator role
   const links = (
     <>
       <NavLink to="/" className={navLinkClass} end onClick={() => setMobileOpen(false)}>
@@ -52,6 +53,21 @@ export function Navbar() {
       <NavLink to="/videos" className={navLinkClass} onClick={() => setMobileOpen(false)}>
         Videos
       </NavLink>
+      {isAuthenticated ? (
+        <NavLink to="/my-playlists" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+          My playlists
+        </NavLink>
+      ) : null}
+      {isAuthenticated && user?.role === 'admin' ? (
+        <NavLink to="/admin/courses" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+          Admin
+        </NavLink>
+      ) : null}
+      {isAuthenticated && user?.role === 'educator' && (
+        <NavLink to="/educator/dashboard" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+          Dashboard
+        </NavLink>
+      )}
     </>
   )
 
@@ -78,15 +94,14 @@ export function Navbar() {
 
           {!isLoading && (
             <div className="relative hidden items-center sm:flex" ref={dropdownRef}>
-              {/* Trigger Avatar Button */}
               <button
                 type="button"
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className="flex items-center gap-1.5 rounded-full p-0.5 transition hover:opacity-80 focus:outline-none"
               >
-                {isAuthenticated && user?.profile_pic ? (
+                {isAuthenticated && user?.profile_pic_url ? (
                   <img
-                    src={user.profile_pic}
+                    src={user.profile_pic_url}
                     alt={user.name || 'User profile'}
                     className="size-8 rounded-full border border-sage-200 object-cover dark:border-ink-700"
                   />
@@ -98,15 +113,28 @@ export function Navbar() {
                 <ChevronDown className={`size-3.5 text-ink-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Universal Submenu Dropdown */}
+              {/* Dropdown Menu updates */}
               {dropdownOpen && (
                 <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-ink-200/60 bg-white p-1.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150 dark:border-ink-800 dark:bg-ink-900">
                   {isAuthenticated ? (
                     <>
                       <div className="px-3 py-2 text-xs border-b border-ink-100 dark:border-ink-800 mb-1">
                         <p className="font-medium text-ink-800 dark:text-ink-200 truncate">{user?.name}</p>
-                        <p className="text-ink-400 truncate">{user?.email}</p>
+                        <p className="text-ink-400 truncate text-xs opacity-75">@{user?.username}</p>
                       </div>
+
+                      {/* Dropdown Quick Access Item for Educators */}
+                      {user?.role === 'educator' && (
+                        <Link
+                          to="/educator/dashboard"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink-700 hover:bg-sage-50 hover:text-sage-700 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-sage-200"
+                        >
+                          <LayoutDashboard className="size-4" />
+                          Dashboard
+                        </Link>
+                      )}
+
                       <Link
                         to="/profile"
                         onClick={() => setDropdownOpen(false)}
@@ -148,7 +176,6 @@ export function Navbar() {
             </div>
           )}
 
-          {/* Mobile Hamburguer Action */}
           <button
             type="button"
             className="rounded-lg p-2 text-ink-600 md:hidden dark:text-ink-300"
@@ -168,8 +195,8 @@ export function Navbar() {
             {isAuthenticated ? (
               <>
                 <div className="flex items-center gap-2 px-3 py-2 text-sm text-ink-500">
-                  {user?.profile_pic ? (
-                    <img src={user.profile_pic} alt="" className="size-6 rounded-full object-cover" />
+                  {user?.profile_pic_url ? (
+                    <img src={user.profile_pic_url} alt="" className="size-6 rounded-full object-cover" />
                   ) : (
                     <User className="size-4" />
                   )}

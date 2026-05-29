@@ -39,9 +39,9 @@ export function ProfilePage() {
       <Card>
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
           <div className="relative">
-            {user.profile_pic ? (
+            {user.profile_pic_url ? (
               <img
-                src={user.profile_pic}
+                src={user.profile_pic_url}
                 alt=""
                 className="size-24 rounded-2xl object-cover ring-4 ring-sage-100 dark:ring-sage-900"
               />

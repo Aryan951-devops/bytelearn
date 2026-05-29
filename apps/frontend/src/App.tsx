@@ -3,12 +3,20 @@ import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { Layout } from '@/components/layout/Layout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { AdminRoute } from '@/components/AdminRoute'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { VideosPage } from '@/pages/VideosPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { SettingsPage } from '@/pages/SettingsPage'
+import { EducatorDashboard } from '@/pages/EducatorDashboard'
+import { CourseDetailPage } from '@/pages/CourseDetailPage'
+import { CoursePlaylistPage } from '@/pages/CoursePlaylistPage'
+import { VideoWatchPage } from '@/pages/VideoWatchPage'
+import { MyPlaylistsPage } from '@/pages/MyPlaylistsPage'
+import { UserPlaylistPage } from '@/pages/UserPlaylistPage'
+import { AdminCoursesPage } from '@/pages/AdminCoursesPage'
 
 export default function App() {
   return (
@@ -18,9 +26,50 @@ export default function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route index element={<HomePage />} />
+              <Route path="courses/:courseId" element={<CourseDetailPage />} />
+              <Route
+                path="courses/:courseId/playlists/:playlistId"
+                element={<CoursePlaylistPage />}
+              />
+              <Route path="watch/:videoId" element={<VideoWatchPage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
               <Route path="videos" element={<VideosPage />} />
+
+              <Route
+                path="my-playlists"
+                element={
+                  <ProtectedRoute>
+                    <MyPlaylistsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="my-playlists/:playlistId"
+                element={
+                  <ProtectedRoute>
+                    <UserPlaylistPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="admin/courses"
+                element={
+                  <AdminRoute>
+                    <AdminCoursesPage />
+                  </AdminRoute>
+                }
+              />
+
+              <Route
+                path="educator/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <EducatorDashboard />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="profile"
                 element={

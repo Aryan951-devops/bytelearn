@@ -13,6 +13,7 @@ export function RegisterPage() {
     name: '',
     email: '',
     password: '',
+    role: 'learner',
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -81,6 +82,37 @@ export function RegisterPage() {
             value={form.password}
             onChange={update('password')}
           />
+          <div className="space-y-2">
+            <label className="text-sm font-medium block">Register as:</label>
+            
+            <div className="flex items-center space-x-6">
+              {/* Option 1: Learner */}
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  value="learner"
+                  checked={form.role === 'learner'}
+                  onChange={update('role')}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm">Learner</span>
+              </label>
+
+              {/* Option 2: Educator */}
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  value="educator"
+                  checked={form.role === 'educator'}
+                  onChange={update('role')}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm">Educator</span>
+              </label>
+            </div>
+          </div>
           {error ? (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/40 dark:text-red-400">
               {error}
