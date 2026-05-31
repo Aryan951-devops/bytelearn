@@ -105,10 +105,10 @@ export interface Comment {
   comment_id: string
   video_id: string
   user_id: string
-  user_name: string
   content: string
   created_at: string
-  likes_count?: number
+  updated_at: string
+  commented_by?: string
 }
 
 export interface ApiResponse<T = undefined> {

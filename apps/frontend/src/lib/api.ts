@@ -1,6 +1,7 @@
 import type {
   ApiError,
   ApiResponse,
+  Comment,
   Course,
   CoursePlaylist,
   CourseWithPlaylists,
@@ -181,4 +182,46 @@ export const videoApi = {
     request<{ video: Video }>(`/video/${videoId}`, {
       method: 'DELETE',
     }),
+}
+
+export const commentApi = {
+  getForVideo: (videoId: string) =>
+    request<{ comments: Comment[] }>(`/comment/v/${videoId}`),
+
+  create: (videoId: string, body: { content: string }) =>
+    request<{ comment: Comment }>(`/comment/v/${videoId}`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  update: (commentId: string, body: { content: string }) =>
+    request<{ comment: Comment }>(`/comment/c/${commentId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    }),
+
+  delete: (commentId: string) =>
+    request(`/comment/c/${commentId}`, {
+      method: 'DELETE',
+    }),
+}
+
+export const likeApi = {
+  toggleVideo: (videoId: string) =>
+    request<{ liked: boolean }>(`/like/toggle/v/${videoId}`, { method: 'POST' }),
+
+  toggleComment: (commentId: string) =>
+    request<{ liked: boolean }>(`/like/toggle/c/${commentId}`, { method: 'POST' }),
+
+  checkVideo: (videoId: string) =>
+    request<{ liked: boolean }>(`/like/check/v/${videoId}`),
+
+  checkComment: (commentId: string) =>
+    request<{ liked: boolean }>(`/like/check/c/${commentId}`),
+
+  getTotalVideoLikes: (videoId: string) =>
+    request<{ total_likes: number }>(`/like/total/v/${videoId}`),
+
+  getTotalCommentLikes: (commentId: string) =>
+    request<{ total_likes: number }>(`/like/total/c/${commentId}`),
 }
