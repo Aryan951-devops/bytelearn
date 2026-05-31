@@ -101,13 +101,15 @@ func FetchAllVideos() (*[]models.Video, error) {
 
 func FetchVideoByID(video_id uuid.UUID) (*models.Video, error) {
 	query := `
-		SELECT 
+		UPDATE videos
+			SET views = views + 1,
+			updated_at = NOW()
+		WHERE video_id = $1
+		RETURNING 
 			video_id, title, description,
 			videofile_url, videofile_public_id, thumbnail_url,
 			thumbnail_public_id, duration_seconds,
 			views, uploaded_by, created_at, updated_at
-		FROM videos
-		WHERE video_id = $1
 	`
 
 	var video models.Video
