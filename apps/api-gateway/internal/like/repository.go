@@ -3,7 +3,7 @@ package like
 import (
 	"context"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/database"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/database"
 	"github.com/google/uuid"
 )
 

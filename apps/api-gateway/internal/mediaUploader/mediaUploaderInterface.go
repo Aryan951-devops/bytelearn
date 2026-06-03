@@ -3,7 +3,7 @@ package mediauploader
 import (
 	"net/url"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/utils"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/utils"
 )
 
 type MediaUploader interface {

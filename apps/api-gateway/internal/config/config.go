@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	mediauploader "github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/mediaUploader"
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/mediaUploader/cloudinaryUploader"
+	mediauploader "github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/mediaUploader"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/mediaUploader/cloudinaryUploader"
 	"github.com/joho/godotenv"
 )
 

@@ -3,7 +3,7 @@ package auth
 import (
 	"time"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/config"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/config"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )

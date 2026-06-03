@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/utils"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/utils"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"

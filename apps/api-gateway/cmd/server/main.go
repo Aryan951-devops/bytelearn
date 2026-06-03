@@ -10,13 +10,13 @@ import (
 
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/auth"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/comments"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/config"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/course"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/database"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/like"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/playlist"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/user"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/video"
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/config"
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/database"
 )
 
 func main() {

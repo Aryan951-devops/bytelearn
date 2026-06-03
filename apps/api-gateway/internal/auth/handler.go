@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/utils"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 

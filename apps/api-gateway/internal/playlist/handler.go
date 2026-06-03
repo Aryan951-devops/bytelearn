@@ -3,8 +3,8 @@ package playlist
 import (
 	"net/http"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/models"
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/utils"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/utils"
+	"github.com/Aryan951-devops/bytelearn/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

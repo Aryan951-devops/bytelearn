@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/database"
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/models"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/database"
+	"github.com/Aryan951-devops/bytelearn/pkg/models"
 	"github.com/google/uuid"
 )
 

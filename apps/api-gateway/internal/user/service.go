@@ -3,8 +3,8 @@ package user
 import (
 	"strings"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/config"
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/models"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/config"
+	"github.com/Aryan951-devops/bytelearn/pkg/models"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )

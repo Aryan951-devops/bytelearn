@@ -3,7 +3,7 @@ package comments
 import (
 	"errors"
 
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/pkg/models"
+	"github.com/Aryan951-devops/bytelearn/pkg/models"
 	"github.com/google/uuid"
 )
 
