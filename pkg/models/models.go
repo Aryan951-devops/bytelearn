@@ -103,21 +103,37 @@ type CommentLike struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type CodingContest struct {
+type CodingPractice struct {
 	ID          uuid.UUID `json:"contest_id"`
 	Title       string    `json:"title"`
-	Description string    `json:"description"`
+	Description *string   `json:"description"`
 	PlaylistID  uuid.UUID `json:"playlist_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type CodingQuestion struct {
-	ID        uuid.UUID `json:"question_id"`
-	Metadata  string    `json:"metadata"`
-	ContestID uuid.UUID `json:"contest_id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID            uuid.UUID `json:"question_id"`
+	ContestID     uuid.UUID `json:"contest_id"`
+	Title         string    `json:"title"`
+	Difficulty    string    `json:"difficulty"`
+	Statement     string    `json:"statement"`
+	Constraints   *string   `json:"constraints"`
+	InputFormat   *string   `json:"input_format"`
+	OutputFormat  *string   `json:"output_format"`
+	TimeLimitMS   int32     `json:"time_limit_ms"`
+	MemoryLimitMB int32     `json:"memory_limit_mb"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
+type TestCase struct {
+	ID             uuid.UUID `json:"testcase_id"`
+	QuestionID     uuid.UUID `json:"question_id"`
+	Input          string    `json:"input"`
+	ExpectedOutput string    `json:"expected_output"`
+	IsHidden       bool      `json:"is_hidden"`
+	CreatedAt      time.Time `json:"created_at"`
 }
 
 type Submission struct {
@@ -126,9 +142,30 @@ type Submission struct {
 	UserID      uuid.UUID `json:"user_id"`
 	Code        string    `json:"code"`
 	Language    string    `json:"language"`
-	Verdict     string    `json:"verdict"`
+	Status      string    `json:"status"`
+	PassedCases int32     `json:"passed_cases"`
+	TotalCases  int32     `json:"total_cases"`
+	Started_At  time.Time `json:"started_at"`
+	Finished_At time.Time `json:"finished_at"`
 	SubmittedAt time.Time `json:"submitted_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type SubmissionResults struct {
+	SubmissionID uuid.UUID `json:"submission_id"`
+	TestCaseID   uuid.UUID `json:"testcase_id"`
+	ActualOutput *string   `json:"actual_output"`
+	ErrorOutput  *string   `json:"error_output"`
+	IsPassed     bool      `json:"is_passed"`
+	Verdict      string    `json:"verdict"`
+	RuntimeMS    *int32    `json:"runtime_ms"`
+	MemoryKB     *int32    `json:"memory_kb"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+type SubmissionJob struct {
+	SubmissionID uuid.UUID `json:"submission_id"`
+	IsHidden     bool      `json:"is_hidden"`
 }
 
 // JSONBMap allows structured JSON slices to map directly into PostgreSQL native JSONB columns.
