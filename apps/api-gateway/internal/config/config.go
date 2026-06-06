@@ -6,6 +6,7 @@ import (
 
 	mediauploader "github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/mediaUploader"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/mediaUploader/cloudinaryUploader"
+	"github.com/Aryan951-devops/bytelearn/pkg/redis"
 	"github.com/joho/godotenv"
 )
 
@@ -20,8 +21,10 @@ type Config struct {
 	DatabaseURL     string
 	JWT_SECRET      string
 	ALLOWED_ORIGINS string
+	RedisAddr       string
 	Cloudinary      CloudinaryConfig
 	MediaUploader   mediauploader.MediaUploader
+	RedisClient     *redis.Client
 }
 
 var AppConfig Config
@@ -37,6 +40,7 @@ func LoadConfig() {
 		DatabaseURL:     getEnv("DATABASE_URL", ""),
 		JWT_SECRET:      getEnv("JWT_SECRET", ""),
 		ALLOWED_ORIGINS: getEnv("ALLOWED_ORIGINS", ""),
+		RedisAddr:       getEnv("REDIS_ADDR", "localhost:6789"),
 		Cloudinary: CloudinaryConfig{
 			CLOUDINARY_CLOUD_NAME: getEnv("CLOUDINARY_CLOUD_NAME", ""),
 			CLOUDINARY_API_KEY:    getEnv("CLOUDINARY_API_KEY", ""),
@@ -56,6 +60,11 @@ func LoadConfig() {
 
 	AppConfig.MediaUploader = cloudinaryUploaderService
 
+	AppConfig.RedisClient = redis.MustConnectRedis(
+		AppConfig.RedisAddr,
+		"",
+		0,
+	)
 }
 
 func getEnv(key string, fallback string) string {

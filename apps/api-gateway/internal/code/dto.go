@@ -1,0 +1,62 @@
+package code
+
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
+type CreateCodingPracticeRequest struct {
+	Title       string    `json:"title" binding:"required"`
+	Description *string   `json:"description"`
+	PlaylistID  uuid.UUID `json:"playlist_id" binding:"required"`
+}
+
+type CreateCodingQuestionRequest struct {
+	ContestID     uuid.UUID `json:"contest_id" binding:"required"`
+	Title         string    `json:"title" binding:"required"`
+	Difficulty    string    `json:"difficulty" binding:"required"`
+	Statement     string    `json:"statement" binding:"required"`
+	Constraints   *string   `json:"constraints"`
+	InputFormat   *string   `json:"input_format"`
+	OutputFormat  *string   `json:"output_format"`
+	TimeLimitMS   int32     `json:"time_limit_ms" binding:"required"`
+	MemoryLimitMB int32     `json:"memory_limit_mb" binding:"required"`
+}
+
+type CreateTestCaseRequest struct {
+	QuestionID     uuid.UUID `json:"question_id" binding:"required"`
+	Input          string    `json:"input" binding:"required"`
+	ExpectedOutput string    `json:"expected_output" binding:"required"`
+	IsHidden       bool      `json:"is_hidden"`
+}
+
+type SubmitCodeRequest struct {
+	QuestionID uuid.UUID `json:"question_id" binding:"required"`
+	Code       string    `json:"code" binding:"required"`
+	Language   string    `json:"language" binding:"required"`
+}
+
+type CodingQuestionMetadata struct {
+	ID         uuid.UUID `json:"question_id"`
+	Title      string    `json:"title"`
+	Difficulty string    `json:"difficulty"`
+}
+
+type CodingPracticeResponse struct {
+	ID          uuid.UUID                `json:"contest_id"`
+	Title       string                   `json:"title"`
+	Description *string                  `json:"description"`
+	PlaylistID  uuid.UUID                `json:"playlist_id"`
+	CreatedAt   time.Time                `json:"created_at"`
+	Questions   []CodingQuestionMetadata `json:"questions"`
+}
+
+type SubmissionStatusResponse struct {
+	ID          uuid.UUID  `json:"submission_id"`
+	Status      string     `json:"status"`
+	PassedCases int32      `json:"passed_cases"`
+	TotalCases  int32      `json:"total_cases"`
+	Started_At  *time.Time `json:"started_at"`
+	Finished_At *time.Time `json:"finished_at"`
+}

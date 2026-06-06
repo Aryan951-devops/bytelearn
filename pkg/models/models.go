@@ -137,18 +137,18 @@ type TestCase struct {
 }
 
 type Submission struct {
-	ID          uuid.UUID `json:"submission_id"`
-	QuestionID  uuid.UUID `json:"question_id"`
-	UserID      uuid.UUID `json:"user_id"`
-	Code        string    `json:"code"`
-	Language    string    `json:"language"`
-	Status      string    `json:"status"`
-	PassedCases int32     `json:"passed_cases"`
-	TotalCases  int32     `json:"total_cases"`
-	Started_At  time.Time `json:"started_at"`
-	Finished_At time.Time `json:"finished_at"`
-	SubmittedAt time.Time `json:"submitted_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uuid.UUID  `json:"submission_id"`
+	QuestionID  uuid.UUID  `json:"question_id"`
+	UserID      uuid.UUID  `json:"user_id"`
+	Code        string     `json:"code"`
+	Language    string     `json:"language"`
+	Status      string     `json:"status"`
+	PassedCases int32      `json:"passed_cases"`
+	TotalCases  int32      `json:"total_cases"`
+	Started_At  *time.Time `json:"started_at"`
+	Finished_At *time.Time `json:"finished_at"`
+	SubmittedAt time.Time  `json:"submitted_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type SubmissionResults struct {
