@@ -87,6 +87,67 @@ func GetCodingPracticeHandler(c *gin.Context) {
 	))
 }
 
+func GetCodingPracticesOfPlaylistHandler(c *gin.Context) {
+
+	playlistID, err := uuid.Parse(c.Param("playlistId"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.NewResponse(
+			"invalid playlist id format",
+			nil,
+		))
+		return
+	}
+
+	cps, err := GetCodingPracticesOfPlaylistService(playlistID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusCreated, utils.NewResponse(
+		"coding practices fetched successfully",
+		gin.H{
+			"practices": cps,
+		},
+	))
+}
+
+func GetCodingQuestionHandler(c *gin.Context) {
+
+	questionID, err := uuid.Parse(c.Param("questionId"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.NewResponse(
+			"invalid question id format",
+			nil,
+		))
+		return
+	}
+
+	question, err := GetCodingQuestionService(questionID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusCreated, utils.NewResponse(
+		"coding question fetched successfully",
+		gin.H{
+			"question": question,
+		},
+	))
+
+}
+
 func CreateCodingQuestionHandler(c *gin.Context) {
 
 	var req CreateCodingQuestionRequest

@@ -11,6 +11,8 @@ func RegisterRoutes(router *gin.RouterGroup) {
 
 	code.POST("/cp/", auth.AuthMiddleware(), CreateCodingPracticeHandler)
 	code.GET("/cp/:contestId", GetCodingPracticeHandler)
+	code.GET("/cp/playlist/:playlistId", GetCodingPracticesOfPlaylistHandler)
+	code.GET("/cp/question/:questionId", GetCodingQuestionHandler)
 	code.POST("/cp/question", auth.AuthMiddleware(), CreateCodingQuestionHandler)
 	code.POST("cp/testcase", auth.AuthMiddleware(), CreateCodingTestCaseHandler)
 	code.GET("/cp/testcases-sample/:questionId", GetSampleTestCasesHandler)

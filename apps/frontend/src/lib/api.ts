@@ -1,12 +1,19 @@
 import type {
   ApiError,
   ApiResponse,
+  CodingPractice,
+  CodingPracticeSummary,
+  CodingQuestion,
   Comment,
   Course,
   CoursePlaylist,
   CourseWithPlaylists,
   Playlist,
   PlaylistWithVideos,
+  Submission,
+  SubmissionResult,
+  SubmissionStatus,
+  TestCase,
   User,
   Video,
 } from '@/types'
@@ -224,4 +231,85 @@ export const likeApi = {
 
   getTotalCommentLikes: (commentId: string) =>
     request<{ total_likes: number }>(`/like/total/c/${commentId}`),
+}
+
+export const codeApi = {
+  createPractice: (body: {
+    title: string
+    description?: string
+    playlist_id: string
+  }) =>
+    request<{ practice: CodingPractice }>('/code/cp/', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  getPractice: (contestId: string) =>
+    request<{ practice: CodingPractice }>(`/code/cp/${contestId}`),
+
+  getPracticesByPlaylist: (playlistId: string) =>
+    request<{ practices: CodingPracticeSummary[] }>(
+      `/code/cp/playlist/${playlistId}`,
+    ),
+
+  getQuestion: (questionId: string) =>
+    request<{ question: CodingQuestion }>(`/code/cp/question/${questionId}`),
+
+  createQuestion: (body: {
+    contest_id: string
+    title: string
+    difficulty: string
+    statement: string
+    constraints?: string
+    input_format?: string
+    output_format?: string
+    time_limit_ms: number
+    memory_limit_mb: number
+  }) =>
+    request<{ question: CodingQuestion }>('/code/cp/question', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  createTestCase: (body: {
+    question_id: string
+    input: string
+    expected_output: string
+    is_hidden: boolean
+  }) =>
+    request<{ testcase: TestCase }>('/code/cp/testcase', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  getSampleTestCases: (questionId: string) =>
+    request<{ testcases: TestCase[] }>(`/code/cp/testcases-sample/${questionId}`),
+
+  submitSample: (body: {
+    question_id: string
+    code: string
+    language: string
+  }) =>
+    request<{ submission: Submission }>('/code/cp/submit-sample', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  submitFinal: (body: {
+    question_id: string
+    code: string
+    language: string
+  }) =>
+    request<{ submission: Submission }>('/code/cp/submit', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  pollSubmission: (submissionId: string) =>
+    request<{ submission: SubmissionStatus }>(`/code/cp/poll/${submissionId}`),
+
+  getSubmissionResult: (submissionId: string) =>
+    request<{ results: SubmissionResult[] }>(
+      `/code/cp/submission-result/${submissionId}`,
+    ),
 }

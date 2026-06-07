@@ -60,3 +60,15 @@ type SubmissionStatusResponse struct {
 	Started_At  *time.Time `json:"started_at"`
 	Finished_At *time.Time `json:"finished_at"`
 }
+
+type SubmissionResultResponse struct {
+	SubmissionID   uuid.UUID `json:"submission_id"`
+	Input          string    `json:"input"`
+	ExpectedOutput string    `json:"expected_output"`
+	ActualOutput   *string   `json:"actual_output"`
+	ErrorOutput    *string   `json:"error_output"`
+	IsPassed       bool      `json:"is_passed"`
+	Verdict        string    `json:"verdict"`
+	RuntimeMS      *int32    `json:"runtime_ms"`
+	MemoryKB       *int32    `json:"memory_kb"`
+}

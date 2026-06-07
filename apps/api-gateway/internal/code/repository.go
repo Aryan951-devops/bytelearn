@@ -110,6 +110,91 @@ func GetCodingPracticeByID(contestID uuid.UUID,
 	return &practice, nil
 }
 
+func GetCodingPracticesOfPlaylist(playlistID uuid.UUID,
+) (*[]models.CodingPractice, error) {
+
+	query := `
+		SELECT contest_id, title, description,
+		playlist_id, created_at, updated_at
+		FROM coding_practice
+		WHERE playlist_id = $1
+	`
+
+	rows, err := database.DB.Query(
+		context.Background(),
+		query,
+		playlistID,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	cps := []models.CodingPractice{}
+
+	for rows.Next() {
+		var cp models.CodingPractice
+
+		err := rows.Scan(
+			&cp.ID,
+			&cp.Title,
+			&cp.Description,
+			&cp.PlaylistID,
+			&cp.CreatedAt,
+			&cp.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		cps = append(cps, cp)
+	}
+
+	return &cps, nil
+}
+
+func GetCodingQuestionByID(questionID uuid.UUID,
+) (*models.CodingQuestion, error) {
+	query := `
+		SELECT
+			question_id, contest_id, title, difficulty,
+			statement, constraints, input_format,
+			output_format, time_limit_ms, memory_limit_mb,
+			created_at, updated_at
+		FROM coding_questions
+		WHERE question_id = $1
+	`
+
+	var question models.CodingQuestion
+
+	err := database.DB.QueryRow(
+		context.Background(),
+		query,
+		questionID,
+	).Scan(
+		&question.ID,
+		&question.ContestID,
+		&question.Title,
+		&question.Difficulty,
+		&question.Statement,
+		&question.Constraints,
+		&question.InputFormat,
+		&question.OutputFormat,
+		&question.TimeLimitMS,
+		&question.MemoryLimitMB,
+		&question.CreatedAt,
+		&question.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &question, nil
+}
+
 func CreateCodingQuestion(question *models.CodingQuestion,
 ) (*models.CodingQuestion, error) {
 
@@ -325,36 +410,53 @@ func FetchSubmissionStatus(submission_id uuid.UUID,
 }
 
 func FetchSubmissionResult(submission_id uuid.UUID,
-) (*models.SubmissionResults, error) {
+) (*[]SubmissionResultResponse, error) {
 
 	query := `
-		SELECT submission_id, testcase_id, actual_output,
-		error_output, is_passed, verdict, runtime_ms,
-		memory_kb, created_at
-		FROM submission_results 
-		WHERE submission_id = $1
+		SELECT 
+			sr.submission_id, t.input, t.expected_output, 
+			sr.actual_output, sr.error_output, sr.is_passed, 
+			sr.verdict, sr.runtime_ms, sr.memory_kb
+		FROM submission_results sr 
+			INNER JOIN testcases t
+		ON sr.testcase_id = t.testcase_id
+		WHERE sr.submission_id = $1
+
 	`
 
-	var response models.SubmissionResults
+	response := []SubmissionResultResponse{}
 
-	err := database.DB.QueryRow(
+	rows, err := database.DB.Query(
 		context.Background(),
 		query,
 		submission_id,
-	).Scan(
-		&response.SubmissionID,
-		&response.TestCaseID,
-		&response.ActualOutput,
-		&response.ErrorOutput,
-		&response.IsPassed,
-		&response.Verdict,
-		&response.RuntimeMS,
-		&response.MemoryKB,
-		&response.CreatedAt,
 	)
 
 	if err != nil {
 		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var result SubmissionResultResponse
+
+		err := rows.Scan(
+			&result.SubmissionID,
+			&result.Input,
+			&result.ExpectedOutput,
+			&result.ActualOutput,
+			&result.ErrorOutput,
+			&result.IsPassed,
+			&result.Verdict,
+			&result.RuntimeMS,
+			&result.MemoryKB,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		response = append(response, result)
 	}
 
 	return &response, nil

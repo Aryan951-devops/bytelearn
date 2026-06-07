@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Settings, User } from 'lucide-react'
-import { courseApi, playlistApi } from '@/lib/api'
+import { Code2, Settings, User } from 'lucide-react'
+import { codeApi, courseApi, playlistApi } from '@/lib/api'
 import type { CoursePlaylist } from '@/types'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { Card } from '@/components/ui/Card'
@@ -17,6 +17,7 @@ export function CoursePlaylistPage() {
   }>()
   const { user } = useAuth()
   const [playlist, setPlaylist] = useState<CoursePlaylist | null>(null)
+  const [hasPractices, setHasPractices] = useState(false)
   const [courseTitle, setCourseTitle] = useState('Course')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -24,11 +25,13 @@ export function CoursePlaylistPage() {
   const load = useCallback(async () => {
     if (!playlistId) return
     try {
-      const [playlistRes, courseRes] = await Promise.all([
+      const [playlistRes, courseRes, practicesRes] = await Promise.all([
         playlistApi.getCoursePlaylist(playlistId),
         courseId ? courseApi.getById(courseId).catch(() => null) : Promise.resolve(null),
+        codeApi.getPracticesByPlaylist(playlistId).catch(() => null),
       ])
       setPlaylist(playlistRes.data?.playlist ?? null)
+      setHasPractices((practicesRes?.data?.practices?.length ?? 0) > 0)
       if (courseRes?.data?.course?.title) {
         setCourseTitle(courseRes.data.course.title)
       }
@@ -59,6 +62,8 @@ export function CoursePlaylistPage() {
     (user.user_id === playlist.educator_user_id ||
       user.user_id === playlist.user_id)
 
+  const practicesPath = `/courses/${courseId}/playlists/${playlistId}/practices`
+
   return (
     <div className="animate-fade-in space-y-8">
       <Breadcrumbs
@@ -81,14 +86,31 @@ export function CoursePlaylistPage() {
               </p>
             ) : null}
           </div>
-          {isOwner ? (
-            <Link to="/educator/dashboard">
-              <Button variant="ghost" size="sm">
-                <Settings className="size-4" />
-                Educator dashboard
-              </Button>
-            </Link>
-          ) : null}
+          <div className="flex flex-wrap items-center gap-2">
+            {hasPractices ? (
+              <Link to={practicesPath}>
+                <Button size="sm">
+                  <Code2 className="size-4" />
+                  Practice
+                </Button>
+              </Link>
+            ) : isOwner ? (
+              <Link to={practicesPath}>
+                <Button variant="secondary" size="sm">
+                  <Code2 className="size-4" />
+                  Set up coding practice
+                </Button>
+              </Link>
+            ) : null}
+            {isOwner ? (
+              <Link to="/educator/dashboard">
+                <Button variant="ghost" size="sm">
+                  <Settings className="size-4" />
+                  Educator dashboard
+                </Button>
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         <Card className="flex items-center gap-4">

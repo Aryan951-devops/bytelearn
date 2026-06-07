@@ -28,6 +28,18 @@ func GetCodingPracticeService(contestID uuid.UUID,
 	return GetCodingPracticeByID(contestID)
 }
 
+func GetCodingPracticesOfPlaylistService(playlistID uuid.UUID,
+) (*[]models.CodingPractice, error) {
+
+	return GetCodingPracticesOfPlaylist(playlistID)
+}
+
+func GetCodingQuestionService(questionID uuid.UUID,
+) (*models.CodingQuestion, error) {
+
+	return GetCodingQuestionByID(questionID)
+}
+
 func CreateCodingQuestionService(
 	req CreateCodingQuestionRequest,
 ) (*models.CodingQuestion, error) {
@@ -110,7 +122,7 @@ func GetSubmissionStatusService(submissionID uuid.UUID,
 }
 
 func GetSubmissionResultService(submissionID uuid.UUID,
-) (*models.SubmissionResults, error) {
+) (*[]SubmissionResultResponse, error) {
 
 	return FetchSubmissionResult(submissionID)
 }

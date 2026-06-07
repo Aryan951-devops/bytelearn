@@ -111,6 +111,83 @@ export interface Comment {
   commented_by?: string
 }
 
+export interface CodingPracticeSummary {
+  contest_id: string
+  title: string
+  description: string | null
+  playlist_id: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CodingPractice extends CodingPracticeSummary {
+  questions: CodingQuestionMeta[]
+}
+
+export interface CodingQuestionMeta {
+  question_id: string
+  title: string
+  difficulty: string
+}
+
+export interface CodingQuestion extends CodingQuestionMeta {
+  contest_id: string
+  statement: string
+  constraints: string | null
+  input_format: string | null
+  output_format: string | null
+  time_limit_ms: number
+  memory_limit_mb: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface TestCase {
+  testcase_id: string
+  question_id: string
+  input: string
+  expected_output: string
+  is_hidden: boolean
+  created_at: string
+}
+
+export interface Submission {
+  submission_id: string
+  question_id: string
+  user_id: string
+  code: string
+  language: string
+  status: string
+  passed_cases: number
+  total_cases: number
+  started_at: string | null
+  finished_at: string | null
+  submitted_at?: string
+  updated_at?: string
+}
+
+export interface SubmissionStatus {
+  submission_id: string
+  status: string
+  passed_cases: number
+  total_cases: number
+  started_at: string | null
+  finished_at: string | null
+}
+
+export interface SubmissionResult {
+  submission_id: string
+  testcase_id: string
+  input: string
+  expected_output: string
+  actual_output: string | null
+  error_output: string | null
+  is_passed: boolean
+  verdict: string
+  runtime_ms: number | null
+  memory_kb: number | null
+}
+
 export interface ApiResponse<T = undefined> {
   message: string
   data?: T

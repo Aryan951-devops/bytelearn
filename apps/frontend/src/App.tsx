@@ -17,6 +17,10 @@ import { VideoWatchPage } from '@/pages/VideoWatchPage'
 import { MyPlaylistsPage } from '@/pages/MyPlaylistsPage'
 import { UserPlaylistPage } from '@/pages/UserPlaylistPage'
 import { AdminCoursesPage } from '@/pages/AdminCoursesPage'
+import { CodingPracticePage } from '@/pages/CodingPracticePage'
+import { CodingQuestionManagePage } from '@/pages/CodingQuestionManagePage'
+import { CodingSolvePage } from '@/pages/CodingSolvePage'
+import { PlaylistPracticesPage } from '@/pages/PlaylistPracticesPage'
 
 export default function App() {
   return (
@@ -30,6 +34,26 @@ export default function App() {
               <Route
                 path="courses/:courseId/playlists/:playlistId"
                 element={<CoursePlaylistPage />}
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/practices"
+                element={<PlaylistPracticesPage />}
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/coding/:contestId"
+                element={<CodingPracticePage />}
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/coding/:contestId/questions/:questionId"
+                element={<CodingSolvePage />}
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/coding/:contestId/questions/:questionId/manage"
+                element={
+                  <ProtectedRoute>
+                    <CodingQuestionManagePage />
+                  </ProtectedRoute>
+                }
               />
               <Route path="watch/:videoId" element={<VideoWatchPage />} />
               <Route path="login" element={<LoginPage />} />
