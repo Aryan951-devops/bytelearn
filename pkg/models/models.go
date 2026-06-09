@@ -1,9 +1,6 @@
 package models
 
 import (
-	"database/sql/driver"
-	"encoding/json"
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -168,28 +165,55 @@ type SubmissionJob struct {
 	IsHidden     bool      `json:"is_hidden"`
 }
 
-// JSONBMap allows structured JSON slices to map directly into PostgreSQL native JSONB columns.
-type JSONBMap []interface{}
+type QuestionType string
+type QuizAttemptStatus string
 
-// Value satisfies driver.Valuer interface, converting map to string byte layout for SQL insertion.
-func (j JSONBMap) Value() (driver.Value, error) {
-	return json.Marshal(j)
-}
-
-// Scan satisfies sql.Scanner interface, decoding raw database input strings straight into structural maps.
-func (j *JSONBMap) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New("type assertion to []byte failed inside JSONB conversion block")
-	}
-	return json.Unmarshal(bytes, j)
-}
+const (
+	QuestionTypeMCQ       QuestionType      = "mcq"
+	QuestionTypeMultiple  QuestionType      = "multiple"
+	QuestionTypeOneWord   QuestionType      = "one_word"
+	QuestionTypeTrueFalse QuestionType      = "true_false"
+	AttemptInProgress     QuizAttemptStatus = "in_progress"
+	AttemptSubmitted      QuizAttemptStatus = "submitted"
+	AttemptExpired        QuizAttemptStatus = "expired"
+)
 
 type Quiz struct {
-	ID         uuid.UUID `json:"quiz_id"`
-	Title      string    `json:"title"`
-	PlaylistID uuid.UUID `json:"playlist_id"`                 // Binds quiz directly to course timeline modules
-	Questions  JSONBMap  `json:"questions" gorm:"type:jsonb"` // Scalable schema-less database array storage
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID              uuid.UUID `json:"quiz_id"`
+	Title           string    `json:"title"`
+	PlaylistID      uuid.UUID `json:"playlist_id"`
+	DurationMinutes int32     `json:"duration_minutes"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+type QuizQuestion struct {
+	ID             uuid.UUID    `json:"question_id"`
+	QuizID         uuid.UUID    `json:"quiz_id"`
+	Type           QuestionType `json:"type"`
+	Question       string       `json:"question"`
+	Options        []string     `json:"options,omitempty"`
+	CorrectOptions []int        `json:"correct_options,omitempty"`
+	CorrectAnswer  string       `json:"correct_answer,omitempty"`
+	Marks          int32        `json:"marks"`
+	NegativeMarks  int32        `json:"negative_marks"`
+	Explanation    *string      `json:"explanation,omitempty"`
+}
+
+type QuizAttempt struct {
+	ID               uuid.UUID             `json:"attempt_id"`
+	QuizID           uuid.UUID             `json:"quiz_id"`
+	UserID           uuid.UUID             `json:"user_id"`
+	Score            int32                 `json:"score"`
+	TotalMarks       int32                 `json:"total_marks"`
+	Status           QuizAttemptStatus     `json:"status"`
+	SubmittedAnswers []UserSubmittedAnswer `json:"submitted_answers"`
+	StartedAt        time.Time             `json:"started_at"`
+	SubmittedAt      time.Time             `json:"submitted_at"`
+}
+
+type UserSubmittedAnswer struct {
+	QuestionID     uuid.UUID `json:"question_id"`
+	SelectedOption []int     `json:"selected_options,omitempty"` // For MCQ/Multiple choice/TrueFalse
+	TextAnswer     string    `json:"text_answer,omitempty"`      // For OneWord
 }

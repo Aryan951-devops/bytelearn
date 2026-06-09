@@ -16,6 +16,7 @@ import (
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/database"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/like"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/playlist"
+	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/quiz"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/user"
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/video"
 )
@@ -60,6 +61,7 @@ func main() {
 	comments.RegisterRoutes(v1)
 	like.RegisterRoutes(v1)
 	code.RegisterRoutes(v1)
+	quiz.RegisterRoutes(v1)
 
 	log.Printf("Server running on port %s", config.AppConfig.Port)
 
