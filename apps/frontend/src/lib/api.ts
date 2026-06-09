@@ -16,6 +16,13 @@ import type {
   TestCase,
   User,
   Video,
+  QuizSummary,
+  CreateQuizQuestionInput,
+  StartQuizResponse,
+  UserSubmittedAnswer,
+  SubmitQuizResponse,
+  QuizAttemptResult,
+  QuizAttemptSummary,
 } from '@/types'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api/v1'
@@ -312,4 +319,35 @@ export const codeApi = {
     request<{ results: SubmissionResult[] }>(
       `/code/cp/submission-result/${submissionId}`,
     ),
+}
+
+export const quizApi = {
+  createQuiz: (body: {
+    title: string
+    playlist_id: string
+    duration_minutes: number
+    questions: CreateQuizQuestionInput[]
+  }) =>
+    request<{ quiz: QuizSummary }>('/quiz/', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  getQuizzesByPlaylist: (playlistId: string) =>
+    request<QuizSummary[]>(`/quiz/quizzes/${playlistId}`),
+
+  startQuiz: (quizId: string) =>
+    request<StartQuizResponse>(`/quiz/start/${quizId}`),
+
+  submitQuiz: (attemptId: string, body: { answers: UserSubmittedAnswer[] }) =>
+    request<SubmitQuizResponse>(`/quiz/submit/${attemptId}`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  getAttemptResult: (attemptId: string) =>
+    request<QuizAttemptResult>(`/quiz/result/${attemptId}`),
+
+  getAttempts: (quizId: string) =>
+    request<QuizAttemptSummary[]>(`/quiz/attempts/${quizId}`),
 }

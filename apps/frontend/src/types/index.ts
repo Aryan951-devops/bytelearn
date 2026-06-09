@@ -188,6 +188,95 @@ export interface SubmissionResult {
   memory_kb: number | null
 }
 
+export type QuizQuestionType = 'mcq' | 'multiple' | 'one_word' | 'true_false'
+export type QuizAttemptStatus = 'in_progress' | 'submitted' | 'expired'
+
+export interface QuizSummary {
+  quiz_id: string
+  title: string
+  playlist_id: string
+  duration_minutes: number
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateQuizQuestionInput {
+  type: QuizQuestionType
+  question: string
+  options: string[]
+  correct_options: number[]
+  correct_answer: string
+  marks: number
+  negative_marks: number
+  explanation?: string
+}
+
+export interface QuizQuestionMetadata {
+  question_id: string
+  type: QuizQuestionType
+  question: string
+  options?: string[]
+  marks: number
+  negative_marks: number
+}
+
+export interface StartQuizResponse {
+  attempt_id: string
+  quiz_id: string
+  duration_minutes: number
+  started_at: string
+  questions: QuizQuestionMetadata[]
+}
+
+export interface UserSubmittedAnswer {
+  question_id: string
+  selected_options?: number[]
+  text_answer?: string
+}
+
+export interface SubmitQuizResponse {
+  attempt_id: string
+  score: number
+  total_marks: number
+  status: QuizAttemptStatus
+}
+
+export interface QuizAnswerResult {
+  question_id: string
+  type: QuizQuestionType
+  question: string
+  options?: string[]
+  selected_options?: number[]
+  text_answer?: string
+  correct_options?: number[]
+  correct_answer?: string
+  explanation?: string | null
+  marks: number
+  negative_marks: number
+}
+
+export interface QuizAttemptResult {
+  attempt_id: string
+  quiz_id: string
+  user_id: string
+  score: number
+  total_marks: number
+  submitted_answers: QuizAnswerResult[]
+  started_at: string
+  submitted_at: string
+}
+
+export interface QuizAttemptSummary {
+  attempt_id: string
+  quiz_id: string
+  user_id: string
+  score: number
+  total_marks: number
+  status: QuizAttemptStatus
+  started_at: string
+  submitted_at: string
+}
+
 export interface ApiResponse<T = undefined> {
   message: string
   data?: T

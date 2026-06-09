@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Code2, Settings, User } from 'lucide-react'
-import { codeApi, courseApi, playlistApi } from '@/lib/api'
+import { ClipboardList, Code2, Settings, User } from 'lucide-react'
+import { codeApi, courseApi, playlistApi, quizApi } from '@/lib/api'
 import type { CoursePlaylist } from '@/types'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import { Card } from '@/components/ui/Card'
@@ -18,6 +18,7 @@ export function CoursePlaylistPage() {
   const { user } = useAuth()
   const [playlist, setPlaylist] = useState<CoursePlaylist | null>(null)
   const [hasPractices, setHasPractices] = useState(false)
+  const [hasQuizzes, setHasQuizzes] = useState(false)
   const [courseTitle, setCourseTitle] = useState('Course')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -25,13 +26,17 @@ export function CoursePlaylistPage() {
   const load = useCallback(async () => {
     if (!playlistId) return
     try {
-      const [playlistRes, courseRes, practicesRes] = await Promise.all([
+      const [playlistRes, courseRes, practicesRes, quizzesRes] = await Promise.all([
         playlistApi.getCoursePlaylist(playlistId),
         courseId ? courseApi.getById(courseId).catch(() => null) : Promise.resolve(null),
         codeApi.getPracticesByPlaylist(playlistId).catch(() => null),
+        quizApi.getQuizzesByPlaylist(playlistId).catch(() => null),
       ])
       setPlaylist(playlistRes.data?.playlist ?? null)
       setHasPractices((practicesRes?.data?.practices?.length ?? 0) > 0)
+      setHasQuizzes(
+        Array.isArray(quizzesRes?.data) ? quizzesRes.data.length > 0 : false,
+      )
       if (courseRes?.data?.course?.title) {
         setCourseTitle(courseRes.data.course.title)
       }
@@ -63,6 +68,7 @@ export function CoursePlaylistPage() {
       user.user_id === playlist.user_id)
 
   const practicesPath = `/courses/${courseId}/playlists/${playlistId}/practices`
+  const quizzesPath = `/courses/${courseId}/playlists/${playlistId}/quizzes`
 
   return (
     <div className="animate-fade-in space-y-8">
@@ -99,6 +105,21 @@ export function CoursePlaylistPage() {
                 <Button variant="secondary" size="sm">
                   <Code2 className="size-4" />
                   Set up coding practice
+                </Button>
+              </Link>
+            ) : null}
+            {hasQuizzes ? (
+              <Link to={quizzesPath}>
+                <Button size="sm">
+                  <ClipboardList className="size-4" />
+                  Quizzes
+                </Button>
+              </Link>
+            ) : isOwner ? (
+              <Link to={quizzesPath}>
+                <Button variant="secondary" size="sm">
+                  <ClipboardList className="size-4" />
+                  Set up quizzes
                 </Button>
               </Link>
             ) : null}

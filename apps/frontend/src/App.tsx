@@ -21,6 +21,10 @@ import { CodingPracticePage } from '@/pages/CodingPracticePage'
 import { CodingQuestionManagePage } from '@/pages/CodingQuestionManagePage'
 import { CodingSolvePage } from '@/pages/CodingSolvePage'
 import { PlaylistPracticesPage } from '@/pages/PlaylistPracticesPage'
+import { PlaylistQuizzesPage } from '@/pages/PlaylistQuizzesPage'
+import { QuizTakePage } from '@/pages/QuizTakePage'
+import { QuizResultPage } from '@/pages/QuizResultPage'
+import { QuizAttemptsPage } from '@/pages/QuizAttemptsPage'
 
 export default function App() {
   return (
@@ -38,6 +42,34 @@ export default function App() {
               <Route
                 path="courses/:courseId/playlists/:playlistId/practices"
                 element={<PlaylistPracticesPage />}
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/quizzes"
+                element={<PlaylistQuizzesPage />}
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/quizzes/:quizId/attempts"
+                element={
+                  <ProtectedRoute>
+                    <QuizAttemptsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/quizzes/:quizId/attempt/:attemptId"
+                element={
+                  <ProtectedRoute>
+                    <QuizTakePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="courses/:courseId/playlists/:playlistId/quizzes/:quizId/result/:attemptId"
+                element={
+                  <ProtectedRoute>
+                    <QuizResultPage />
+                  </ProtectedRoute>
+                }
               />
               <Route
                 path="courses/:courseId/playlists/:playlistId/coding/:contestId"
