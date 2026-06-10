@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  api-gateway:
+    image: ${DOCKERHUB_USER}/bytelearn-api-gateway:latest
+    restart: always
+    ports:
+      - "80:{PORT}"
+    depends_on:
+      - redis
+    environment:
+      - PORT=${PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_ADDR=redis:6379
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+
+  execution-service:
+    image: ${DOCKERHUB_USER}/bytelearn-execution:latest
+    restart: always
+    depends_on:
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_ADDR=redis:6379
+
+  frontend:
+    image: ${DOCKERHUB_USER}/bytelearn-frontend:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE=${VITE_API_BASE}
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 60 --cleanup
