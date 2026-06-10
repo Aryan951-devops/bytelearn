@@ -1,3 +1,4 @@
+// Package code manages structural data formatting for coding tasks.
 package code
 
 import (
@@ -6,12 +7,14 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCodingPracticeRequest holds creation details for a practice set.
 type CreateCodingPracticeRequest struct {
 	Title       string    `json:"title" binding:"required"`
 	Description *string   `json:"description"`
 	PlaylistID  uuid.UUID `json:"playlist_id" binding:"required"`
 }
 
+// CreateCodingQuestionRequest holds creation details for a coding challenge.
 type CreateCodingQuestionRequest struct {
 	ContestID     uuid.UUID `json:"contest_id" binding:"required"`
 	Title         string    `json:"title" binding:"required"`
@@ -24,6 +27,7 @@ type CreateCodingQuestionRequest struct {
 	MemoryLimitMB int32     `json:"memory_limit_mb" binding:"required"`
 }
 
+// CreateTestCaseRequest holds creation details for a question test case.
 type CreateTestCaseRequest struct {
 	QuestionID     uuid.UUID `json:"question_id" binding:"required"`
 	Input          string    `json:"input" binding:"required"`
@@ -31,18 +35,21 @@ type CreateTestCaseRequest struct {
 	IsHidden       bool      `json:"is_hidden"`
 }
 
+// SubmitCodeRequest holds data submitted by a user for validation.
 type SubmitCodeRequest struct {
 	QuestionID uuid.UUID `json:"question_id" binding:"required"`
 	Code       string    `json:"code" binding:"required"`
 	Language   string    `json:"language" binding:"required"`
 }
 
+// CodingQuestionMetadata holds information describing a question.
 type CodingQuestionMetadata struct {
 	ID         uuid.UUID `json:"question_id"`
 	Title      string    `json:"title"`
 	Difficulty string    `json:"difficulty"`
 }
 
+// CodingPracticeResponse holds data sent back for a practice set.
 type CodingPracticeResponse struct {
 	ID          uuid.UUID                `json:"contest_id"`
 	Title       string                   `json:"title"`
@@ -52,15 +59,17 @@ type CodingPracticeResponse struct {
 	Questions   []CodingQuestionMetadata `json:"questions"`
 }
 
+// SubmissionStatusResponse holds general updates on a code submission.
 type SubmissionStatusResponse struct {
 	ID          uuid.UUID  `json:"submission_id"`
 	Status      string     `json:"status"`
 	PassedCases int32      `json:"passed_cases"`
 	TotalCases  int32      `json:"total_cases"`
-	Started_At  *time.Time `json:"started_at"`
-	Finished_At *time.Time `json:"finished_at"`
+	StartedAt   *time.Time `json:"started_at"`
+	FinishedAt  *time.Time `json:"finished_at"`
 }
 
+// SubmissionResultResponse holds final evaluation results for code.
 type SubmissionResultResponse struct {
 	SubmissionID   uuid.UUID `json:"submission_id"`
 	Input          string    `json:"input"`

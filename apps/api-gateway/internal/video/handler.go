@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetAllVideosHandler handles routes to read all videos.
 func GetAllVideosHandler(c *gin.Context) {
 
 	videos, err := GetAllVideos()
@@ -32,6 +33,7 @@ func GetAllVideosHandler(c *gin.Context) {
 	))
 }
 
+// GetAllVideosOfUserHandler handles routes to read a user's videos.
 func GetAllVideosOfUserHandler(c *gin.Context) {
 
 	ctxUser, exists := c.Get("user")
@@ -63,9 +65,10 @@ func GetAllVideosOfUserHandler(c *gin.Context) {
 	))
 }
 
+// GetVideoHandler handles routes to find a specific video.
 func GetVideoHandler(c *gin.Context) {
 
-	videoId, err := uuid.Parse(c.Param("videoID"))
+	videoID, err := uuid.Parse(c.Param("videoID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid video ID format",
@@ -74,7 +77,7 @@ func GetVideoHandler(c *gin.Context) {
 		return
 	}
 
-	video, err := GetVideo(videoId)
+	video, err := GetVideo(videoID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
 			err.Error(),
@@ -91,9 +94,10 @@ func GetVideoHandler(c *gin.Context) {
 	))
 }
 
+// DeleteVideoHandler handles routes to delete a video.
 func DeleteVideoHandler(c *gin.Context) {
 
-	videoId, err := uuid.Parse(c.Param("videoID"))
+	videoID, err := uuid.Parse(c.Param("videoID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid video ID format",
@@ -113,7 +117,7 @@ func DeleteVideoHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	video, err := DeleteVideo(videoId, user.ID)
+	video, err := DeleteVideo(videoID, user.ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
@@ -131,6 +135,7 @@ func DeleteVideoHandler(c *gin.Context) {
 	))
 }
 
+// GenerateUploadSignatureHandler handles requests for upload signatures.
 func GenerateUploadSignatureHandler(c *gin.Context) {
 
 	ctxUser, exists := c.Get("user")
@@ -166,6 +171,7 @@ func GenerateUploadSignatureHandler(c *gin.Context) {
 	))
 }
 
+// UploadVideoHandler handles requests to upload video assets.
 func UploadVideoHandler(c *gin.Context) {
 
 	var req UploadVideoRequest
@@ -214,22 +220,21 @@ func UploadVideoHandler(c *gin.Context) {
 	))
 }
 
+// UpdateVideoHandler handles requests to adjust video properties.
 func UpdateVideoHandler(c *gin.Context) {
 
-	videoId, err := uuid.Parse(c.Param("videoID"))
+	videoID, err := uuid.Parse(c.Param("videoID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
-			"invalid video ID format",
-			nil,
+			"invalid video ID format", nil,
 		))
 		return
 	}
 
 	var req UpdateVideoRequest
-	if err := c.ShouldBind(&req); err != nil {
+	if err = c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
-			"invalid request payload",
-			nil,
+			"invalid request payload", nil,
 		))
 		return
 	}
@@ -237,62 +242,61 @@ func UpdateVideoHandler(c *gin.Context) {
 	ctxUser, exists := c.Get("user")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, utils.NewResponse(
-			"Session user context not found",
-			nil,
+			"Session user context not found", nil,
 		))
 		return
 	}
 
 	user := ctxUser.(*models.User)
-
 	file, err := c.FormFile("thumbnail")
 
-	var updated_video *models.Video
+	var updatedVideo *models.Video
 
 	if err == nil {
-		if err := utils.IsImageAllowed(file); err != nil {
+		if err = utils.IsImageAllowed(file); err != nil {
 			c.JSON(http.StatusBadRequest, utils.NewResponse(
-				err.Error(),
-				nil,
+				err.Error(), nil,
 			))
 			return
 		}
 
-		os.MkdirAll("./temp", os.ModePerm)
+		err = os.MkdirAll("./temp", os.ModePerm)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, utils.NewResponse(
+				err.Error(), nil,
+			))
+			return
+		}
 
 		// unique file name
-		tempPath := fmt.Sprintf(
-			"./temp/%s%s",
-			uuid.New().String(),
+		tempPath := fmt.Sprintf("./temp/%s%s", uuid.New().String(),
 			filepath.Ext(file.Filename),
 		)
 
-		if err := c.SaveUploadedFile(file, tempPath); err != nil {
+		if err = c.SaveUploadedFile(file, tempPath); err != nil {
 			c.JSON(http.StatusInternalServerError, utils.NewResponse(
-				"failed to save uploaded file",
-				nil,
+				"failed to save uploaded file", nil,
 			))
 			return
 		}
-		defer os.Remove(tempPath)
+		defer func() {
+			_ = os.Remove(tempPath)
+		}()
 
-		updated_video, err = UpdateVideo(req, user.ID, videoId, &tempPath)
+		updatedVideo, err = UpdateVideo(req, user.ID, videoID, &tempPath)
 	} else {
-		updated_video, err = UpdateVideo(req, user.ID, videoId, nil)
+		updatedVideo, err = UpdateVideo(req, user.ID, videoID, nil)
 	}
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
-			err.Error(),
-			nil,
+			err.Error(), nil,
 		))
 		return
 	}
 
 	c.JSON(http.StatusOK, utils.NewResponse(
 		"video updated successfully",
-		gin.H{
-			"user": updated_video,
-		},
+		gin.H{"user": updatedVideo},
 	))
 }

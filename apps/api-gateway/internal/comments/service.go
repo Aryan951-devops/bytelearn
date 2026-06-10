@@ -7,10 +7,12 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetAllCommentOfVideoService processes the request to get all comments for a video.
 func GetAllCommentOfVideoService(videoID uuid.UUID) ([]CommentResponse, error) {
 	return GetAllCommentOfVideo(videoID)
 }
 
+// CreateCommentService runs business logic to add a new comment.
 func CreateCommentService(req CommentRequest,
 	userID uuid.UUID,
 	videoID uuid.UUID) (*models.Comment, error) {
@@ -23,6 +25,7 @@ func CreateCommentService(req CommentRequest,
 	return CreateComment(&comment)
 }
 
+// DeleteCommentService checks permissions and deletes a comment.
 func DeleteCommentService(
 	commentID uuid.UUID,
 	userID uuid.UUID,
@@ -40,6 +43,7 @@ func DeleteCommentService(
 	return DeleteComment(commentID)
 }
 
+// UpdateCommentService checks permissions and updates a comment.
 func UpdateCommentService(
 	req CommentRequest,
 	userID uuid.UUID,

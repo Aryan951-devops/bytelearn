@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCodingPracticeHandler handles HTTP tasks for making practice elements.
 func CreateCodingPracticeHandler(c *gin.Context) {
 
 	var req CreateCodingPracticeRequest
@@ -58,6 +59,7 @@ func CreateCodingPracticeHandler(c *gin.Context) {
 	))
 }
 
+// GetCodingPracticeHandler handles HTTP tasks to inspect a practice set.
 func GetCodingPracticeHandler(c *gin.Context) {
 
 	contestID, err := uuid.Parse(c.Param("contestId"))
@@ -87,6 +89,7 @@ func GetCodingPracticeHandler(c *gin.Context) {
 	))
 }
 
+// GetCodingPracticesOfPlaylistHandler displays all practices of playlist.
 func GetCodingPracticesOfPlaylistHandler(c *gin.Context) {
 
 	playlistID, err := uuid.Parse(c.Param("playlistId"))
@@ -117,6 +120,7 @@ func GetCodingPracticesOfPlaylistHandler(c *gin.Context) {
 	))
 }
 
+// GetCodingQuestionHandler handles HTTP requests to view specific problems.
 func GetCodingQuestionHandler(c *gin.Context) {
 
 	questionID, err := uuid.Parse(c.Param("questionId"))
@@ -148,6 +152,7 @@ func GetCodingQuestionHandler(c *gin.Context) {
 
 }
 
+// CreateCodingQuestionHandler processes creation of coding question.
 func CreateCodingQuestionHandler(c *gin.Context) {
 
 	var req CreateCodingQuestionRequest
@@ -197,6 +202,7 @@ func CreateCodingQuestionHandler(c *gin.Context) {
 	))
 }
 
+// CreateCodingTestCaseHandler processes testcase attached to specific problems.
 func CreateCodingTestCaseHandler(c *gin.Context) {
 
 	var req CreateTestCaseRequest
@@ -246,6 +252,7 @@ func CreateCodingTestCaseHandler(c *gin.Context) {
 	))
 }
 
+// GetSampleTestCasesHandler reads visible testing items.
 func GetSampleTestCasesHandler(c *gin.Context) {
 
 	questionID, err := uuid.Parse(c.Param("questionId"))
@@ -276,6 +283,7 @@ func GetSampleTestCasesHandler(c *gin.Context) {
 	))
 }
 
+// SubmitCodeHandler accepts program code blocks to run evaluation processes.
 func SubmitCodeHandler(c *gin.Context) {
 
 	var req SubmitCodeRequest
@@ -321,6 +329,7 @@ func SubmitCodeHandler(c *gin.Context) {
 	))
 }
 
+// SubmitSampleCodeHandler checks input blocks against primary sample testcases.
 func SubmitSampleCodeHandler(c *gin.Context) {
 
 	var req SubmitCodeRequest
@@ -366,6 +375,7 @@ func SubmitSampleCodeHandler(c *gin.Context) {
 	))
 }
 
+// GetSubmissionStatusHandler responds with processing details on code submission status.
 func GetSubmissionStatusHandler(c *gin.Context) {
 
 	submissionID, err := uuid.Parse(c.Param("submissionId"))
@@ -389,7 +399,7 @@ func GetSubmissionStatusHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	if err := VerifySubmissionOwnership(submissionID,
+	if err = VerifySubmissionOwnership(submissionID,
 		user.ID); err != nil {
 		c.JSON(http.StatusUnauthorized, utils.NewResponse(
 			"unauthorized",
@@ -418,6 +428,7 @@ func GetSubmissionStatusHandler(c *gin.Context) {
 	))
 }
 
+// GetSubmissionResultHandler details score values once processing settles.
 func GetSubmissionResultHandler(c *gin.Context) {
 
 	submissionID, err := uuid.Parse(c.Param("submissionId"))
@@ -441,7 +452,7 @@ func GetSubmissionResultHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	if err := VerifySubmissionOwnership(submissionID,
+	if err = VerifySubmissionOwnership(submissionID,
 		user.ID); err != nil {
 		c.JSON(http.StatusUnauthorized, utils.NewResponse(
 			"unauthorized",

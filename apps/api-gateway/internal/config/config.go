@@ -1,3 +1,4 @@
+// Package config handles environment variable configurations.
 package config
 
 import (
@@ -5,30 +6,34 @@ import (
 	"os"
 
 	mediauploader "github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/mediaUploader"
-	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/mediaUploader/cloudinaryUploader"
+	cloudinaryuploader "github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/mediaUploader/cloudinaryUploader"
 	"github.com/Aryan951-devops/bytelearn/pkg/redis"
 	"github.com/joho/godotenv"
 )
 
+// CloudinaryConfig holds API secret combinations for media servers.
 type CloudinaryConfig struct {
-	CLOUDINARY_CLOUD_NAME string
-	CLOUDINARY_API_KEY    string
-	CLOUDINARY_API_SECRET string
+	CloudinaryCloudName string
+	CloudinaryAPIKey    string
+	CloudinaryAPISecret string
 }
 
+// Config manages overall application system variables.
 type Config struct {
-	Port            string
-	DatabaseURL     string
-	JWT_SECRET      string
-	ALLOWED_ORIGINS string
-	RedisAddr       string
-	Cloudinary      CloudinaryConfig
-	MediaUploader   mediauploader.MediaUploader
-	RedisClient     *redis.Client
+	RedisClient    *redis.Client
+	Port           string
+	DatabaseURL    string
+	JWTSecret      string
+	AllowedOrigins string
+	RedisAddr      string
+	Cloudinary     CloudinaryConfig
+	MediaUploader  mediauploader.MediaUploader
 }
 
+// AppConfig stores the globally accessible configurations.
 var AppConfig Config
 
+// LoadConfig initializes and hydrates configuration elements.
 func LoadConfig() {
 	err := godotenv.Load()
 	if err != nil {
@@ -36,22 +41,22 @@ func LoadConfig() {
 	}
 
 	AppConfig = Config{
-		Port:            getEnv("PORT", "8080"),
-		DatabaseURL:     getEnv("DATABASE_URL", ""),
-		JWT_SECRET:      getEnv("JWT_SECRET", ""),
-		ALLOWED_ORIGINS: getEnv("ALLOWED_ORIGINS", ""),
-		RedisAddr:       getEnv("REDIS_ADDR", "localhost:6789"),
+		Port:           getEnv("PORT", "8080"),
+		DatabaseURL:    getEnv("DATABASE_URL", ""),
+		JWTSecret:      getEnv("JWT_SECRET", ""),
+		AllowedOrigins: getEnv("ALLOWED_ORIGINS", ""),
+		RedisAddr:      getEnv("REDIS_ADDR", "localhost:6789"),
 		Cloudinary: CloudinaryConfig{
-			CLOUDINARY_CLOUD_NAME: getEnv("CLOUDINARY_CLOUD_NAME", ""),
-			CLOUDINARY_API_KEY:    getEnv("CLOUDINARY_API_KEY", ""),
-			CLOUDINARY_API_SECRET: getEnv("CLOUDINARY_API_SECRET", ""),
+			CloudinaryCloudName: getEnv("CLOUDINARY_CLOUD_NAME", ""),
+			CloudinaryAPIKey:    getEnv("CLOUDINARY_API_KEY", ""),
+			CloudinaryAPISecret: getEnv("CLOUDINARY_API_SECRET", ""),
 		},
 	}
 
-	cloudinaryUploaderService, err := cloudinaryUploader.NewCloudinaryUploader(
-		AppConfig.Cloudinary.CLOUDINARY_API_KEY,
-		AppConfig.Cloudinary.CLOUDINARY_API_SECRET,
-		AppConfig.Cloudinary.CLOUDINARY_CLOUD_NAME,
+	cloudinaryUploaderService, err := cloudinaryuploader.NewCloudinaryUploader(
+		AppConfig.Cloudinary.CloudinaryAPIKey,
+		AppConfig.Cloudinary.CloudinaryAPISecret,
+		AppConfig.Cloudinary.CloudinaryCloudName,
 	)
 
 	if err != nil {

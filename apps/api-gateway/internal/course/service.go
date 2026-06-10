@@ -8,33 +8,35 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCourseService coordinates validations for staging new courses.
 func CreateCourseService(
 	req CreateCourseRequest,
-	user_id uuid.UUID,
+	userID uuid.UUID,
 ) (*models.Course, error) {
 
 	course := &models.Course{
 		Title:       req.Title,
 		Description: req.Description,
 		Category:    req.Category,
-		CreatedBy:   user_id,
+		CreatedBy:   userID,
 	}
 
 	return CreateCourse(course)
 }
 
+// UpdateCourseService processes validation structures requesting delta modifications.
 func UpdateCourseService(
 	req UpdateCourseRequest,
-	course_id uuid.UUID,
-	user_id uuid.UUID,
+	courseID uuid.UUID,
+	userID uuid.UUID,
 ) (*models.Course, error) {
 
-	existingCourse, err := GetCourseById(course_id)
+	existingCourse, err := GetCourseByID(courseID)
 	if err != nil {
 		return nil, err
 	}
 
-	if existingCourse.CreatedBy != user_id {
+	if existingCourse.CreatedBy != userID {
 		return nil, errors.New("you are not authorized to update this playlist")
 	}
 
@@ -53,10 +55,12 @@ func UpdateCourseService(
 	return UpdateCourse(existingCourse)
 }
 
+// GetAllCoursesService exposes lookup lists for all validated configurations.
 func GetAllCoursesService() ([]models.Course, error) {
 	return GetAllCourses()
 }
 
+// GetCourseWithPlaylistsService fetches course with its associated playlists.
 func GetCourseWithPlaylistsService(
 	courseID uuid.UUID,
 ) (*CourseWithPlaylistResponse, error) {

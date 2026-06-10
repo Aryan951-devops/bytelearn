@@ -9,7 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+// Middleware protects routes by validating tokens.
+func Middleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
@@ -23,7 +24,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return []byte(config.AppConfig.JWT_SECRET), nil
+			return []byte(config.AppConfig.JWTSecret), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -43,16 +44,16 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userIdStr, _ := claims["user_id"].(string)
+		userIDStr, _ := claims["user_id"].(string)
 
-		parsedUUID, err := uuid.Parse(userIdStr)
+		parsedUUID, err := uuid.Parse(userIDStr)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "malformed user identifier format"})
 			c.Abort()
 			return
 		}
 
-		user, err := GetUserByUserId(parsedUUID)
+		user, err := GetUserByUserID(parsedUUID)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": err,

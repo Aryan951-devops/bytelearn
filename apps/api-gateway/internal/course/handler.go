@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCourseHandler exposes target frameworks for creation routines.
 func CreateCourseHandler(c *gin.Context) {
 	var req CreateCourseRequest
 
@@ -56,6 +57,7 @@ func CreateCourseHandler(c *gin.Context) {
 	))
 }
 
+// UpdateCourseHandler executes targeted operational updates.
 func UpdateCourseHandler(c *gin.Context) {
 	courseID, err := uuid.Parse(c.Param("courseId"))
 	if err != nil {
@@ -67,7 +69,8 @@ func UpdateCourseHandler(c *gin.Context) {
 	}
 
 	var req UpdateCourseRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	err = c.ShouldBindJSON(&req)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			err.Error(),
 			nil,
@@ -94,7 +97,7 @@ func UpdateCourseHandler(c *gin.Context) {
 		return
 	}
 
-	update_course, err := UpdateCourseService(req, courseID, user.ID)
+	updateCourse, err := UpdateCourseService(req, courseID, user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
 			err.Error(),
@@ -106,11 +109,12 @@ func UpdateCourseHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, utils.NewResponse(
 		"course updated successfully",
 		gin.H{
-			"course": update_course,
+			"course": updateCourse,
 		},
 	))
 }
 
+// GetAllCoursesHandler fetches all courses.
 func GetAllCoursesHandler(c *gin.Context) {
 	courses, err := GetAllCoursesService()
 	if err != nil {
@@ -129,6 +133,7 @@ func GetAllCoursesHandler(c *gin.Context) {
 	))
 }
 
+// GetCourseWithPlaylistsHandler presents modular views of course sequences.
 func GetCourseWithPlaylistsHandler(c *gin.Context) {
 
 	courseID, err := uuid.Parse(c.Param("courseId"))

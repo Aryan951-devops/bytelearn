@@ -1,3 +1,4 @@
+// Package quiz handles the data and logic for quizzes.
 package quiz
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateQuizRequest holds data needed to create a new quiz.
 type CreateQuizRequest struct {
 	Title           string               `json:"title" binding:"required"`
 	PlaylistID      uuid.UUID            `json:"playlist_id" binding:"required"`
@@ -14,6 +16,7 @@ type CreateQuizRequest struct {
 	Questions       []CreateQuizQuestion `json:"questions" binding:"required"`
 }
 
+// CreateQuizQuestion holds data for a single quiz question.
 type CreateQuizQuestion struct {
 	Type           models.QuestionType `json:"type"`
 	Question       string              `json:"question"`
@@ -25,6 +28,7 @@ type CreateQuizQuestion struct {
 	Explanation    *string             `json:"explanation"`
 }
 
+// QuizQuestionMetadata holds basic details about a question.
 type QuizQuestionMetadata struct {
 	ID            uuid.UUID           `json:"question_id"`
 	Type          models.QuestionType `json:"type"`
@@ -34,6 +38,7 @@ type QuizQuestionMetadata struct {
 	NegativeMarks int32               `json:"negative_marks"`
 }
 
+// StartQuizResponse holds the data sent back when a user begins a quiz.
 type StartQuizResponse struct {
 	AttemptID       uuid.UUID              `json:"attempt_id"`
 	QuizID          uuid.UUID              `json:"quiz_id"`
@@ -42,10 +47,12 @@ type StartQuizResponse struct {
 	Questions       []QuizQuestionMetadata `json:"questions"`
 }
 
+// SubmitQuizRequest holds answers submitted by a user.
 type SubmitQuizRequest struct {
 	Answers []models.UserSubmittedAnswer `json:"answers"`
 }
 
+// SubmitQuizResponse holds results sent back after a quiz is checked.
 type SubmitQuizResponse struct {
 	ID         uuid.UUID                `json:"attempt_id"`
 	Score      int32                    `json:"score"`
@@ -53,6 +60,7 @@ type SubmitQuizResponse struct {
 	Status     models.QuizAttemptStatus `json:"status"`
 }
 
+// QuizAttemptResponse holds details of a quiz attempt.
 type QuizAttemptResponse struct {
 	ID               uuid.UUID            `json:"attempt_id"`
 	QuizID           uuid.UUID            `json:"quiz_id"`
@@ -64,6 +72,7 @@ type QuizAttemptResponse struct {
 	SubmittedAt      time.Time            `json:"submitted_at"`
 }
 
+// QuizAnswerResponse holds data for a quiz answer.
 type QuizAnswerResponse struct {
 	QuestionID     uuid.UUID           `json:"question_id"`
 	Type           models.QuestionType `json:"type"`

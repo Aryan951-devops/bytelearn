@@ -8,78 +8,85 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreatePlaylistService processes payload validation to generate a playlist.
 func CreatePlaylistService(req CreatePlaylistRequest,
-	user_id uuid.UUID) (*models.Playlist, error) {
+	userID uuid.UUID) (*models.Playlist, error) {
 
 	playlist := models.Playlist{
 		Type:        req.Type,
 		Title:       req.Title,
 		Description: req.Description,
-		UserID:      user_id,
+		UserID:      userID,
 		CourseID:    req.CourseID,
 	}
 
 	return CreatePlaylist(&playlist)
 }
 
-func GetUserPlaylistsService(user_id uuid.UUID,
+// GetUserPlaylistsService fetches playlists belonging to a user.
+func GetUserPlaylistsService(userID uuid.UUID,
 ) ([]models.Playlist, error) {
 
-	return GetUserPlaylists(user_id)
+	return GetUserPlaylists(userID)
 }
 
-func GetUserPlaylistByIdService(playlist_id uuid.UUID,
-	user_id uuid.UUID,
+// GetUserPlaylistByIDService fetches a singular user playlist entity.
+func GetUserPlaylistByIDService(playlistID uuid.UUID,
+	userID uuid.UUID,
 ) (*PlaylistResponse, error) {
 
-	if err := VerifyPlaylistOwnership(playlist_id, user_id); err != nil {
+	if err := VerifyPlaylistOwnership(playlistID, userID); err != nil {
 		return nil, err
 	}
 
-	return GetUserPlaylistWithVideos(playlist_id)
+	return GetUserPlaylistWithVideos(playlistID)
 }
 
-func GetCoursePlaylistByIdService(playlist_id uuid.UUID,
+// GetCoursePlaylistByIDService retrieves a specific course playlist item.
+func GetCoursePlaylistByIDService(playlistID uuid.UUID,
 ) (*CoursePlaylistResponse, error) {
 
-	return GetCoursePlaylist(playlist_id)
+	return GetCoursePlaylist(playlistID)
 }
 
-func AddVideoToPlaylistService(playlist_id uuid.UUID,
-	video_id uuid.UUID,
-	user_id uuid.UUID,
+// AddVideoToPlaylistService appends a selected video metadata into a playlist.
+func AddVideoToPlaylistService(playlistID uuid.UUID,
+	videoID uuid.UUID,
+	userID uuid.UUID,
 ) error {
 
-	if err := VerifyPlaylistOwnership(playlist_id, user_id); err != nil {
+	if err := VerifyPlaylistOwnership(playlistID, userID); err != nil {
 		return err
 	}
 
-	return AddVideoToPlaylist(playlist_id, video_id)
+	return AddVideoToPlaylist(playlistID, videoID)
 }
 
-func DeleteVideoFromPlaylistService(playlist_id uuid.UUID,
-	video_id uuid.UUID,
-	user_id uuid.UUID,
+// DeleteVideoFromPlaylistService handles removal of videos from custom playlists.
+func DeleteVideoFromPlaylistService(playlistID uuid.UUID,
+	videoID uuid.UUID,
+	userID uuid.UUID,
 ) error {
 
-	if err := VerifyPlaylistOwnership(playlist_id, user_id); err != nil {
+	if err := VerifyPlaylistOwnership(playlistID, userID); err != nil {
 		return err
 	}
 
-	return DeleteVideoFromPlaylist(playlist_id, video_id)
+	return DeleteVideoFromPlaylist(playlistID, videoID)
 }
 
+// UpdatePlaylistService updates meta settings of an existing playlist.
 func UpdatePlaylistService(req UpdatePlaylistRequest,
-	playlist_id uuid.UUID,
-	user_id uuid.UUID,
+	playlistID uuid.UUID,
+	userID uuid.UUID,
 ) (*models.Playlist, error) {
 
-	existingPlaylist, err := GetPlaylistById(playlist_id)
+	existingPlaylist, err := GetPlaylistByID(playlistID)
 	if err != nil {
 		return nil, err
 	}
 
-	if existingPlaylist.UserID != user_id {
+	if existingPlaylist.UserID != userID {
 		return nil, errors.New("you are not authorized to update this playlist")
 	}
 

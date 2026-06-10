@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCodingPracticeService prepares data for storing practice elements.
 func CreateCodingPracticeService(
 	req CreateCodingPracticeRequest,
 ) (*models.CodingPractice, error) {
@@ -22,24 +23,28 @@ func CreateCodingPracticeService(
 	return CreateCodingPractice(&practice)
 }
 
+// GetCodingPracticeService retrives coding practice.
 func GetCodingPracticeService(contestID uuid.UUID,
 ) (*CodingPracticeResponse, error) {
 
 	return GetCodingPracticeByID(contestID)
 }
 
+// GetCodingPracticesOfPlaylistService retrives all practices of playlist.
 func GetCodingPracticesOfPlaylistService(playlistID uuid.UUID,
 ) (*[]models.CodingPractice, error) {
 
 	return GetCodingPracticesOfPlaylist(playlistID)
 }
 
+// GetCodingQuestionService finds a problem configuration using its ID.
 func GetCodingQuestionService(questionID uuid.UUID,
 ) (*models.CodingQuestion, error) {
 
 	return GetCodingQuestionByID(questionID)
 }
 
+// CreateCodingQuestionService creates a coding question.
 func CreateCodingQuestionService(
 	req CreateCodingQuestionRequest,
 ) (*models.CodingQuestion, error) {
@@ -59,6 +64,7 @@ func CreateCodingQuestionService(
 	return CreateCodingQuestion(&question)
 }
 
+// CreateCodingTestCaseService sets up individual testing logic rules.
 func CreateCodingTestCaseService(
 	req CreateTestCaseRequest,
 ) (*models.TestCase, error) {
@@ -73,12 +79,14 @@ func CreateCodingTestCaseService(
 	return CreateCodingTestCase(&testcase)
 }
 
+// GetSampleTestCasesService manages lookup requests for publicly visible examples.
 func GetSampleTestCasesService(questionID uuid.UUID,
 ) (*[]models.TestCase, error) {
 
 	return GetSampleTestCases(questionID)
 }
 
+// SubmitCodeService processes incoming text solutions to be checked.
 func SubmitCodeService(req SubmitCodeRequest,
 	userID uuid.UUID,
 	isHidden bool,
@@ -91,14 +99,14 @@ func SubmitCodeService(req SubmitCodeRequest,
 		UserID:     userID,
 	}
 
-	new_submission, err := CreateSubmission(&submission)
+	newSubmission, err := CreateSubmission(&submission)
 
 	if err != nil {
 		return nil, err
 	}
 
 	job := models.SubmissionJob{
-		SubmissionID: new_submission.ID,
+		SubmissionID: newSubmission.ID,
 		IsHidden:     isHidden,
 	}
 
@@ -112,15 +120,17 @@ func SubmitCodeService(req SubmitCodeRequest,
 		return nil, err
 	}
 
-	return new_submission, nil
+	return newSubmission, nil
 }
 
+// GetSubmissionStatusService monitors background execution lines.
 func GetSubmissionStatusService(submissionID uuid.UUID,
 ) (*SubmissionStatusResponse, error) {
 
 	return FetchSubmissionStatus(submissionID)
 }
 
+// GetSubmissionResultService gathers score parameters once runs complete.
 func GetSubmissionResultService(submissionID uuid.UUID,
 ) (*[]SubmissionResultResponse, error) {
 

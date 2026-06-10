@@ -5,11 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// RegisterRoutes defines the HTTP routes for the course package.
 func RegisterRoutes(router *gin.RouterGroup) {
 
 	course := router.Group("/course")
 
-	course.POST("/", auth.AuthMiddleware(), CreateCourseHandler)
+	course.POST("/", auth.Middleware(), CreateCourseHandler)
 	course.GET("/all", GetAllCoursesHandler)
 	course.GET("/:courseId", GetCourseWithPlaylistsHandler)
 	course.PATCH("/:courseId", UpdateCourseHandler)

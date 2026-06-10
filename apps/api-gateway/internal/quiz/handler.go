@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateQuizHandler handles the API route to save a new quiz.
 func CreateQuizHandler(c *gin.Context) {
 
 	var req CreateQuizRequest
@@ -63,9 +64,10 @@ func CreateQuizHandler(c *gin.Context) {
 	))
 }
 
+// StartQuizHandler handles the API route to begin a quiz.
 func StartQuizHandler(c *gin.Context) {
 
-	quizId, err := uuid.Parse(c.Param("quizId"))
+	quizID, err := uuid.Parse(c.Param("quizId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid quiz id",
@@ -85,7 +87,7 @@ func StartQuizHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	response, err := StartQuizService(quizId, user.ID)
+	response, err := StartQuizService(quizID, user.ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
@@ -101,9 +103,10 @@ func StartQuizHandler(c *gin.Context) {
 	))
 }
 
+// GetAllQuizesOfPlaylistHandler handles the API route to list quizzes.
 func GetAllQuizesOfPlaylistHandler(c *gin.Context) {
 
-	playlistId, err := uuid.Parse(c.Param("playlistId"))
+	playlistID, err := uuid.Parse(c.Param("playlistId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid playlist id",
@@ -112,7 +115,7 @@ func GetAllQuizesOfPlaylistHandler(c *gin.Context) {
 		return
 	}
 
-	quizzes, err := GetAllQuizesOfPlaylistService(playlistId)
+	quizzes, err := GetAllQuizesOfPlaylistService(playlistID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
@@ -128,9 +131,10 @@ func GetAllQuizesOfPlaylistHandler(c *gin.Context) {
 	))
 }
 
+// SubmitQuizHandler handles the API route to score a quiz.
 func SubmitQuizHandler(c *gin.Context) {
 
-	attemptId, err := uuid.Parse(c.Param("attemptId"))
+	attemptID, err := uuid.Parse(c.Param("attemptId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid attempt id",
@@ -141,7 +145,7 @@ func SubmitQuizHandler(c *gin.Context) {
 
 	var req SubmitQuizRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err = c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			err.Error(),
 			nil,
@@ -161,7 +165,7 @@ func SubmitQuizHandler(c *gin.Context) {
 	user := ctxUser.(*models.User)
 
 	err = VerifyAttemptOwnership(
-		attemptId,
+		attemptID,
 		user.ID,
 	)
 
@@ -173,7 +177,7 @@ func SubmitQuizHandler(c *gin.Context) {
 		return
 	}
 
-	result, err := SubmitQuizService(attemptId, req)
+	result, err := SubmitQuizService(attemptID, req)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
@@ -189,9 +193,10 @@ func SubmitQuizHandler(c *gin.Context) {
 	))
 }
 
+// GetAttemptResultHandler handles the API route to get quiz result.
 func GetAttemptResultHandler(c *gin.Context) {
 
-	attemptId, err := uuid.Parse(c.Param("attemptId"))
+	attemptID, err := uuid.Parse(c.Param("attemptId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid attempt id",
@@ -212,7 +217,7 @@ func GetAttemptResultHandler(c *gin.Context) {
 	user := ctxUser.(*models.User)
 
 	err = VerifyAttemptOwnership(
-		attemptId,
+		attemptID,
 		user.ID,
 	)
 
@@ -224,7 +229,7 @@ func GetAttemptResultHandler(c *gin.Context) {
 	}
 
 	attemptResult, err := GetAttemptResultService(
-		attemptId,
+		attemptID,
 	)
 
 	if err != nil {
@@ -242,9 +247,10 @@ func GetAttemptResultHandler(c *gin.Context) {
 
 }
 
+// GetAllAttemptsOfQuizHandler handles the API route to see previous tries.
 func GetAllAttemptsOfQuizHandler(c *gin.Context) {
 
-	quizId, err := uuid.Parse(c.Param("quizId"))
+	quizID, err := uuid.Parse(c.Param("quizId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid playlist id",
@@ -265,7 +271,7 @@ func GetAllAttemptsOfQuizHandler(c *gin.Context) {
 	user := ctxUser.(*models.User)
 
 	attempts, err := GetAllAttemptsOfQuizService(
-		quizId,
+		quizID,
 		user.ID,
 	)
 

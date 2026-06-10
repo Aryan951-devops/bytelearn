@@ -1,3 +1,4 @@
+// Package mediauploader defines tools for file storage.
 package mediauploader
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/utils"
 )
 
+// MediaUploader defines the methods required to upload files.
 type MediaUploader interface {
 	UploadProfilePic(filePath string) utils.ResponseFromUpload
 	UploadThumbnail(filePath string) utils.ResponseFromUpload

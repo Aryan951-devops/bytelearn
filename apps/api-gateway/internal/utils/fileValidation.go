@@ -1,3 +1,4 @@
+// Package utils provides common helper tools for file validation and responses.
 package utils
 
 import (
@@ -9,6 +10,7 @@ import (
 	"strings"
 )
 
+// IsImageAllowed verifies if the uploaded multipart file header matches image criteria.
 func IsImageAllowed(fileHeader *multipart.FileHeader) error {
 
 	// Validate file size
@@ -37,7 +39,9 @@ func IsImageAllowed(fileHeader *multipart.FileHeader) error {
 		return errors.New("failed to open uploaded file")
 	}
 
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	// Read first 512 bytes
 	buffer := make([]byte, 512)

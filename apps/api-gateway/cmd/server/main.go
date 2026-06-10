@@ -1,3 +1,4 @@
+// Package main is the entry point to launch the web server application.
 package main
 
 import (
@@ -30,9 +31,12 @@ func main() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	router.SetTrustedProxies(nil)
+	err := router.SetTrustedProxies(nil)
+	if err != nil {
+		log.Fatal("Error:", err)
+	}
 
-	allowedOrigins := strings.Split(config.AppConfig.ALLOWED_ORIGINS, ",")
+	allowedOrigins := strings.Split(config.AppConfig.AllowedOrigins, ",")
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},

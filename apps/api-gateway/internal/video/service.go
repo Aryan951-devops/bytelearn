@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetAllVideos gets a list of all videos.
 func GetAllVideos() (*[]models.Video, error) {
 	videos, err := FetchAllVideos()
 
@@ -24,8 +25,9 @@ func GetAllVideos() (*[]models.Video, error) {
 	return videos, nil
 }
 
-func GetAllVideosOfUserService(user_id uuid.UUID) (*[]models.Video, error) {
-	videos, err := FetchAllVideosOfUser(user_id)
+// GetAllVideosOfUserService gets a list of videos belonging to a user.
+func GetAllVideosOfUserService(userID uuid.UUID) (*[]models.Video, error) {
+	videos, err := FetchAllVideosOfUser(userID)
 
 	if err != nil {
 		return nil, err
@@ -34,8 +36,9 @@ func GetAllVideosOfUserService(user_id uuid.UUID) (*[]models.Video, error) {
 	return videos, nil
 }
 
-func GetVideo(video_id uuid.UUID) (*models.Video, error) {
-	video, err := FetchVideoByID(video_id)
+// GetVideo reads a single video profile.
+func GetVideo(videoID uuid.UUID) (*models.Video, error) {
+	video, err := FetchVideoByID(videoID)
 
 	if err != nil {
 		return nil, err
@@ -44,14 +47,15 @@ func GetVideo(video_id uuid.UUID) (*models.Video, error) {
 	return video, nil
 }
 
-func DeleteVideo(video_id uuid.UUID, user_id uuid.UUID) (*models.Video, error) {
-	video, err := FetchVideoByID(video_id)
+// DeleteVideo removes a video file record.
+func DeleteVideo(videoID uuid.UUID, userID uuid.UUID) (*models.Video, error) {
+	video, err := FetchVideoByID(videoID)
 
 	if err != nil {
 		return nil, errors.New("Internal Server Error")
 	}
 
-	if video.UploadedBy != user_id {
+	if video.UploadedBy != userID {
 		return nil, errors.New("you are not authorized to delete this video")
 	}
 
@@ -65,7 +69,7 @@ func DeleteVideo(video_id uuid.UUID, user_id uuid.UUID) (*models.Video, error) {
 		log.Println("failed to delete thumbnail on cloudinary:", err)
 	}
 
-	err = DeleteVideoByID(video_id)
+	err = DeleteVideoByID(videoID)
 	if err != nil {
 		return nil, err
 	}
@@ -73,6 +77,7 @@ func DeleteVideo(video_id uuid.UUID, user_id uuid.UUID) (*models.Video, error) {
 	return video, nil
 }
 
+// GenerateUploadSignature creates a signed key for media upload servers.
 func GenerateUploadSignature() (gin.H, error) {
 	timestamp := time.Now().Unix()
 
@@ -83,7 +88,7 @@ func GenerateUploadSignature() (gin.H, error) {
 
 	signature, err := config.AppConfig.MediaUploader.SignParameters(
 		paramsToSign,
-		config.AppConfig.Cloudinary.CLOUDINARY_API_SECRET,
+		config.AppConfig.Cloudinary.CloudinaryAPISecret,
 	)
 
 	if err != nil {
@@ -93,21 +98,22 @@ func GenerateUploadSignature() (gin.H, error) {
 	signatureData := gin.H{
 		"timestamp":  timestamp,
 		"signature":  signature,
-		"api_key":    config.AppConfig.Cloudinary.CLOUDINARY_API_KEY,
-		"cloud_name": config.AppConfig.Cloudinary.CLOUDINARY_CLOUD_NAME,
+		"api_key":    config.AppConfig.Cloudinary.CloudinaryAPIKey,
+		"cloud_name": config.AppConfig.Cloudinary.CloudinaryCloudName,
 		"folder":     "bytelearn/videos",
 	}
 	return signatureData, nil
 }
 
+// UploadVideo processes requests to add a video file.
 func UploadVideo(req UploadVideoRequest, userID uuid.UUID,
 ) (*models.Video, error) {
 
 	video := &models.Video{
 		Title:              req.Title,
 		Description:        &req.Description,
-		Videofile_Url:      req.Videofile_Url,
-		Videofile_PublicID: req.Videofile_PublicID,
+		Videofile_Url:      req.VideofileURL,
+		Videofile_PublicID: req.VideofilePublicID,
 		DurationSeconds:    req.DurationSeconds,
 		UploadedBy:         userID,
 	}
@@ -115,15 +121,16 @@ func UploadVideo(req UploadVideoRequest, userID uuid.UUID,
 	return CreateVideo(video)
 }
 
-func UpdateVideo(req UpdateVideoRequest, user_id uuid.UUID,
-	video_id uuid.UUID, tempPath *string) (*models.Video, error) {
+// UpdateVideo processes requests to edit video descriptions.
+func UpdateVideo(req UpdateVideoRequest, userID uuid.UUID,
+	videoID uuid.UUID, tempPath *string) (*models.Video, error) {
 
-	video, err := GetVideo(video_id)
+	video, err := GetVideo(videoID)
 	if err != nil {
 		return nil, err
 	}
 
-	if video.UploadedBy != user_id {
+	if video.UploadedBy != userID {
 		return nil, errors.New("you are not unauthorized to update video")
 	}
 
@@ -146,11 +153,11 @@ func UpdateVideo(req UpdateVideoRequest, user_id uuid.UUID,
 		video.Thumbnail_PublicID = &imageData.PublicID
 	}
 
-	updated_video, err := UpdateVideoByID(video)
+	updatedVideo, err := UpdateVideoByID(video)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return updated_video, nil
+	return updatedVideo, nil
 }

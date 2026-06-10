@@ -9,7 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetAllCommentOfVideo(video_id uuid.UUID) ([]CommentResponse, error) {
+// GetAllCommentOfVideo gets all comments for a specific video.
+func GetAllCommentOfVideo(videoID uuid.UUID) ([]CommentResponse, error) {
 	query := `
 		SELECT c.comment_id, c.video_id, c.user_id, 
 		u.username, c.content, c.created_at, c.updated_at
@@ -21,7 +22,7 @@ func GetAllCommentOfVideo(video_id uuid.UUID) ([]CommentResponse, error) {
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		video_id,
+		videoID,
 	)
 
 	if err != nil {
@@ -53,6 +54,7 @@ func GetAllCommentOfVideo(video_id uuid.UUID) ([]CommentResponse, error) {
 	return comments, nil
 }
 
+// CreateComment saves a new comment to the database.
 func CreateComment(comment *models.Comment) (*models.Comment, error) {
 	query := `
 		INSERT INTO comments 
@@ -64,7 +66,7 @@ func CreateComment(comment *models.Comment) (*models.Comment, error) {
 		created_at, updated_at
 	`
 
-	var new_comment models.Comment
+	var newComment models.Comment
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
@@ -72,22 +74,23 @@ func CreateComment(comment *models.Comment) (*models.Comment, error) {
 		comment.UserID,
 		comment.Content,
 	).Scan(
-		&new_comment.ID,
-		&new_comment.VideoID,
-		&new_comment.UserID,
-		&new_comment.Content,
-		&new_comment.CreatedAt,
-		&new_comment.UpdatedAt,
+		&newComment.ID,
+		&newComment.VideoID,
+		&newComment.UserID,
+		&newComment.Content,
+		&newComment.CreatedAt,
+		&newComment.UpdatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &new_comment, nil
+	return &newComment, nil
 }
 
-func DeleteComment(comment_id uuid.UUID) error {
+// DeleteComment removes a comment from the database by its ID.
+func DeleteComment(commentID uuid.UUID) error {
 	query := `
 		DELETE FROM comments 
 		WHERE comment_id = $1
@@ -96,12 +99,13 @@ func DeleteComment(comment_id uuid.UUID) error {
 	_, err := database.DB.Exec(
 		context.Background(),
 		query,
-		comment_id,
+		commentID,
 	)
 
 	return err
 }
 
+// UpdateComment saves changes to an existing comment.
 func UpdateComment(comment *models.Comment) (*models.Comment, error) {
 	query := `
 		UPDATE comments
@@ -112,28 +116,29 @@ func UpdateComment(comment *models.Comment) (*models.Comment, error) {
 		created_at, updated_at
 	`
 
-	var updated_comment models.Comment
+	var updatedComment models.Comment
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
 		comment.Content,
 		comment.ID,
 	).Scan(
-		&updated_comment.ID,
-		&updated_comment.VideoID,
-		&updated_comment.UserID,
-		&updated_comment.Content,
-		&updated_comment.CreatedAt,
-		&updated_comment.UpdatedAt,
+		&updatedComment.ID,
+		&updatedComment.VideoID,
+		&updatedComment.UserID,
+		&updatedComment.Content,
+		&updatedComment.CreatedAt,
+		&updatedComment.UpdatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &updated_comment, nil
+	return &updatedComment, nil
 }
 
+// GetCommentByID finds a single comment by its ID.
 func GetCommentByID(commentID uuid.UUID) (*models.Comment, error) {
 
 	query := `

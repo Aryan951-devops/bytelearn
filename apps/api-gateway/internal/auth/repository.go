@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetUserByEmail finds a user profile using an email address.
 func GetUserByEmail(email string) (*models.User, error) {
 
 	query := `
@@ -48,7 +49,8 @@ func GetUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
-func GetUserByUserId(id uuid.UUID) (*models.User, error) {
+// GetUserByUserID finds a user profile using a unique user ID.
+func GetUserByUserID(id uuid.UUID) (*models.User, error) {
 	query := `
 		SELECT 
 			user_id, username, name, email, phone_no, 
@@ -85,6 +87,7 @@ func GetUserByUserId(id uuid.UUID) (*models.User, error) {
 	return &user, nil
 }
 
+// CreateUser saves a new user account profile.
 func CreateUser(user *models.User) error {
 
 	query := `

@@ -2,6 +2,7 @@ package like
 
 import "github.com/google/uuid"
 
+// ToggleVideoLikeService adds or removes a video like.
 func ToggleVideoLikeService(
 	userID,
 	videoID uuid.UUID,
@@ -21,6 +22,7 @@ func ToggleVideoLikeService(
 	return true, err
 }
 
+// ToggleCommentLikeService adds or removes a comment like.
 func ToggleCommentLikeService(
 	userID,
 	commentID uuid.UUID,
@@ -40,6 +42,7 @@ func ToggleCommentLikeService(
 	return true, err
 }
 
+// CheckVideoLikeService verifies if a video is liked by a user.
 func CheckVideoLikeService(
 	userID,
 	videoID uuid.UUID,
@@ -48,6 +51,7 @@ func CheckVideoLikeService(
 	return IsVideoLiked(userID, videoID)
 }
 
+// CheckCommentLikeService verifies if a comment is liked by a user.
 func CheckCommentLikeService(
 	userID,
 	commentID uuid.UUID,
@@ -56,6 +60,7 @@ func CheckCommentLikeService(
 	return IsCommentLiked(userID, commentID)
 }
 
+// GetTotalVideoLikesService fetches the total like count for a video.
 func GetTotalVideoLikesService(
 	videoID uuid.UUID,
 ) (int64, error) {
@@ -63,6 +68,7 @@ func GetTotalVideoLikesService(
 	return GetTotalVideoLikes(videoID)
 }
 
+// GetTotalCommentLikesService fetches the total like count for a comment.
 func GetTotalCommentLikesService(
 	commentID uuid.UUID,
 ) (int64, error) {

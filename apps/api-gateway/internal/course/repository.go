@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCourse inserts a new course structure into the database.
 func CreateCourse(course *models.Course) (*models.Course, error) {
 
 	query := `
@@ -19,7 +20,7 @@ func CreateCourse(course *models.Course) (*models.Course, error) {
 	created_at, updated_at
 	`
 
-	var new_course models.Course
+	var newCourse models.Course
 
 	err := database.DB.QueryRow(
 		context.Background(),
@@ -29,22 +30,23 @@ func CreateCourse(course *models.Course) (*models.Course, error) {
 		course.Category,
 		course.CreatedBy,
 	).Scan(
-		&new_course.ID,
-		&new_course.Title,
-		&new_course.Description,
-		&new_course.Category,
-		&new_course.CreatedBy,
-		&new_course.CreatedAt,
-		&new_course.UpdatedAt,
+		&newCourse.ID,
+		&newCourse.Title,
+		&newCourse.Description,
+		&newCourse.Category,
+		&newCourse.CreatedBy,
+		&newCourse.CreatedAt,
+		&newCourse.UpdatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &new_course, nil
+	return &newCourse, nil
 }
 
+// UpdateCourse persists modifications applied directly onto existing courses.
 func UpdateCourse(course *models.Course) (*models.Course, error) {
 
 	query := `
@@ -86,6 +88,7 @@ func UpdateCourse(course *models.Course) (*models.Course, error) {
 	return &updatedCourse, nil
 }
 
+// GetAllCourses pulls a baseline collection slice of all registered courses.
 func GetAllCourses() ([]models.Course, error) {
 
 	query := `
@@ -137,7 +140,8 @@ func GetAllCourses() ([]models.Course, error) {
 	return courses, nil
 }
 
-func GetCourseById(course_id uuid.UUID) (*models.Course, error) {
+// GetCourseByID fetches course.
+func GetCourseByID(courseID uuid.UUID) (*models.Course, error) {
 	query := `
 	SELECT
 		course_id, title, description, 
@@ -151,7 +155,7 @@ func GetCourseById(course_id uuid.UUID) (*models.Course, error) {
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		course_id,
+		courseID,
 	).Scan(
 		&course.ID,
 		&course.Title,
@@ -168,7 +172,8 @@ func GetCourseById(course_id uuid.UUID) (*models.Course, error) {
 	return &course, nil
 }
 
-func GetCourseWithPlaylists(course_id uuid.UUID) (*CourseWithPlaylistResponse, error) {
+// GetCourseWithPlaylists fetches course along with all its playlists.
+func GetCourseWithPlaylists(courseID uuid.UUID) (*CourseWithPlaylistResponse, error) {
 
 	query := `
 	SELECT
@@ -185,7 +190,7 @@ func GetCourseWithPlaylists(course_id uuid.UUID) (*CourseWithPlaylistResponse, e
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		course_id,
+		courseID,
 	).Scan(
 		&response.ID,
 		&response.Title,
@@ -211,7 +216,7 @@ func GetCourseWithPlaylists(course_id uuid.UUID) (*CourseWithPlaylistResponse, e
 	rows, err := database.DB.Query(
 		context.Background(),
 		playlistQuery,
-		course_id,
+		courseID,
 	)
 
 	if err != nil {
@@ -230,7 +235,7 @@ func GetCourseWithPlaylists(course_id uuid.UUID) (*CourseWithPlaylistResponse, e
 			&educator.ID,
 			&educator.Username,
 			&educator.Name,
-			&educator.ProfilePic_Url,
+			&educator.ProfilePicURL,
 		)
 
 		if err != nil {

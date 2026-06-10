@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// ToggleCommentLikeHandler handles endpoints for toggling comment likes.
 func ToggleCommentLikeHandler(c *gin.Context) {
 
 	commentID, err := uuid.Parse(c.Param("commentId"))
@@ -49,6 +50,7 @@ func ToggleCommentLikeHandler(c *gin.Context) {
 		))
 }
 
+// ToggleVideoLikeHandler handles endpoints for toggling video likes.
 func ToggleVideoLikeHandler(c *gin.Context) {
 
 	videoID, err := uuid.Parse(c.Param("videoId"))
@@ -89,6 +91,7 @@ func ToggleVideoLikeHandler(c *gin.Context) {
 		))
 }
 
+// CheckVideoLikeHandler handles requests to check a video's like status.
 func CheckVideoLikeHandler(c *gin.Context) {
 
 	videoID, _ := uuid.Parse(c.Param("videoId"))
@@ -124,6 +127,7 @@ func CheckVideoLikeHandler(c *gin.Context) {
 		))
 }
 
+// CheckCommentLikeHandler handles requests to check a comment's like status.
 func CheckCommentLikeHandler(c *gin.Context) {
 
 	commentID, _ := uuid.Parse(c.Param("commentId"))
@@ -159,6 +163,7 @@ func CheckCommentLikeHandler(c *gin.Context) {
 		))
 }
 
+// GetTotalVideoLikesHandler handles requests for video's like counts.
 func GetTotalVideoLikesHandler(c *gin.Context) {
 
 	videoID, err := uuid.Parse(c.Param("videoId"))
@@ -184,6 +189,7 @@ func GetTotalVideoLikesHandler(c *gin.Context) {
 		))
 }
 
+// GetTotalCommentLikesHandler handles requests for comment's like counts.
 func GetTotalCommentLikesHandler(c *gin.Context) {
 
 	commentID, err := uuid.Parse(c.Param("commentId"))

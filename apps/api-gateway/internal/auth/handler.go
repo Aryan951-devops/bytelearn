@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// RegisterHandler handles calls to create accounts.
 func RegisterHandler(c *gin.Context) {
 
 	var req RegisterRequest
@@ -37,6 +38,7 @@ func RegisterHandler(c *gin.Context) {
 	))
 }
 
+// LoginHandler handles calls to authenticate users.
 func LoginHandler(c *gin.Context) {
 
 	var req LoginRequest
@@ -67,6 +69,7 @@ func LoginHandler(c *gin.Context) {
 	))
 }
 
+// LogoutHandler handles calls to sign out users.
 func LogoutHandler(c *gin.Context) {
 
 	c.SetCookie("access_token", "", -1, "/", "", false, true)
@@ -77,6 +80,7 @@ func LogoutHandler(c *gin.Context) {
 	))
 }
 
+// VerifyAccessToken handles checks to validate existing access sessions.
 func VerifyAccessToken(c *gin.Context) {
 	_, exists := c.Get("user")
 

@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreatePlaylistHandler handles REST endpoints for creating playlist.
 func CreatePlaylistHandler(c *gin.Context) {
 
 	var req CreatePlaylistRequest
@@ -58,6 +59,7 @@ func CreatePlaylistHandler(c *gin.Context) {
 
 }
 
+// GetUserPlaylistsHandler handles requests fetching multiple playlist for authenticated users.
 func GetUserPlaylistsHandler(c *gin.Context) {
 
 	ctxUser, exists := c.Get("user")
@@ -88,9 +90,10 @@ func GetUserPlaylistsHandler(c *gin.Context) {
 	))
 }
 
-func GetUserPlaylistByIdHandler(c *gin.Context) {
+// GetUserPlaylistByIDHandler parses route IDs to fetch user custom playlists.
+func GetUserPlaylistByIDHandler(c *gin.Context) {
 
-	playlistId, err := uuid.Parse(c.Param("playlistId"))
+	playlistID, err := uuid.Parse(c.Param("playlistId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid playlist ID format",
@@ -110,7 +113,7 @@ func GetUserPlaylistByIdHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	playlist, err := GetUserPlaylistByIdService(playlistId, user.ID)
+	playlist, err := GetUserPlaylistByIDService(playlistID, user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
 			err.Error(),
@@ -128,9 +131,10 @@ func GetUserPlaylistByIdHandler(c *gin.Context) {
 
 }
 
-func GetCoursePlaylistByIdHandler(c *gin.Context) {
+// GetCoursePlaylistByIDHandler handles request for fetching course playlist.
+func GetCoursePlaylistByIDHandler(c *gin.Context) {
 
-	playlistId, err := uuid.Parse(c.Param("playlistId"))
+	playlistID, err := uuid.Parse(c.Param("playlistId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid playlist ID format",
@@ -139,7 +143,7 @@ func GetCoursePlaylistByIdHandler(c *gin.Context) {
 		return
 	}
 
-	playlist, err := GetCoursePlaylistByIdService(playlistId)
+	playlist, err := GetCoursePlaylistByIDService(playlistID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
 			err.Error(),
@@ -156,9 +160,10 @@ func GetCoursePlaylistByIdHandler(c *gin.Context) {
 	))
 }
 
+// AddVideoToPlaylistHandler handles requests to add video into playlist.
 func AddVideoToPlaylistHandler(c *gin.Context) {
 
-	videoId, err := uuid.Parse(c.Param("videoId"))
+	videoID, err := uuid.Parse(c.Param("videoId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid video ID format",
@@ -167,7 +172,7 @@ func AddVideoToPlaylistHandler(c *gin.Context) {
 		return
 	}
 
-	playlistId, err := uuid.Parse(c.Param("playlistId"))
+	playlistID, err := uuid.Parse(c.Param("playlistId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid playlist ID format",
@@ -187,7 +192,7 @@ func AddVideoToPlaylistHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	err = AddVideoToPlaylistService(playlistId, videoId, user.ID)
+	err = AddVideoToPlaylistService(playlistID, videoID, user.ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
@@ -204,9 +209,10 @@ func AddVideoToPlaylistHandler(c *gin.Context) {
 
 }
 
+// DeleteVideoFromPlaylistHandler deletes video inside a playlist.
 func DeleteVideoFromPlaylistHandler(c *gin.Context) {
 
-	videoId, err := uuid.Parse(c.Param("videoId"))
+	videoID, err := uuid.Parse(c.Param("videoId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid video ID format",
@@ -215,7 +221,7 @@ func DeleteVideoFromPlaylistHandler(c *gin.Context) {
 		return
 	}
 
-	playlistId, err := uuid.Parse(c.Param("playlistId"))
+	playlistID, err := uuid.Parse(c.Param("playlistId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid playlist ID format",
@@ -235,7 +241,7 @@ func DeleteVideoFromPlaylistHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	err = DeleteVideoFromPlaylistService(playlistId, videoId, user.ID)
+	err = DeleteVideoFromPlaylistService(playlistID, videoID, user.ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
@@ -251,14 +257,10 @@ func DeleteVideoFromPlaylistHandler(c *gin.Context) {
 	))
 }
 
+// UpdatePlaylistHandler handles updating of playlist.
 func UpdatePlaylistHandler(c *gin.Context) {
-	/**
-	TODO:
-		Take playlistId
-		and update the playlist
-	*/
 
-	playlistId, err := uuid.Parse(c.Param("playlistId"))
+	playlistID, err := uuid.Parse(c.Param("playlistId"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid playlist ID format",
@@ -269,7 +271,7 @@ func UpdatePlaylistHandler(c *gin.Context) {
 
 	var req UpdatePlaylistRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err = c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			err.Error(),
 			nil,
@@ -288,7 +290,7 @@ func UpdatePlaylistHandler(c *gin.Context) {
 
 	user := ctxUser.(*models.User)
 
-	playlist, err := UpdatePlaylistService(req, playlistId, user.ID)
+	playlist, err := UpdatePlaylistService(req, playlistID, user.ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(

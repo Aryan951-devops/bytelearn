@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreatePlaylist inserts a new playlist entry.
 func CreatePlaylist(playlist *models.Playlist) (*models.Playlist, error) {
 	query := `
 	INSERT INTO playlists
@@ -19,7 +20,7 @@ func CreatePlaylist(playlist *models.Playlist) (*models.Playlist, error) {
 	created_at, updated_at
 	`
 
-	var new_playlist models.Playlist
+	var newPlaylist models.Playlist
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
@@ -29,24 +30,25 @@ func CreatePlaylist(playlist *models.Playlist) (*models.Playlist, error) {
 		playlist.UserID,
 		playlist.CourseID,
 	).Scan(
-		&new_playlist.ID,
-		&new_playlist.Type,
-		&new_playlist.Title,
-		&new_playlist.Description,
-		&new_playlist.UserID,
-		&new_playlist.CourseID,
-		&new_playlist.CreatedAt,
-		&new_playlist.UpdatedAt,
+		&newPlaylist.ID,
+		&newPlaylist.Type,
+		&newPlaylist.Title,
+		&newPlaylist.Description,
+		&newPlaylist.UserID,
+		&newPlaylist.CourseID,
+		&newPlaylist.CreatedAt,
+		&newPlaylist.UpdatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &new_playlist, err
+	return &newPlaylist, err
 }
 
-func GetUserPlaylists(user_id uuid.UUID) ([]models.Playlist, error) {
+// GetUserPlaylists returns all playlists matching the provided userID.
+func GetUserPlaylists(userID uuid.UUID) ([]models.Playlist, error) {
 	query := `
 	SELECT playlist_id, type, title, description, 
 	user_id, course_id, created_at, updated_at
@@ -58,7 +60,7 @@ func GetUserPlaylists(user_id uuid.UUID) ([]models.Playlist, error) {
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		user_id,
+		userID,
 	)
 
 	if err != nil {
@@ -92,9 +94,10 @@ func GetUserPlaylists(user_id uuid.UUID) ([]models.Playlist, error) {
 	return playlists, nil
 }
 
+// AddVideoToPlaylist links a video file to a target playlist.
 func AddVideoToPlaylist(
-	playlist_id uuid.UUID,
-	video_id uuid.UUID,
+	playlistID uuid.UUID,
+	videoID uuid.UUID,
 ) error {
 
 	query := `
@@ -114,15 +117,16 @@ func AddVideoToPlaylist(
 	_, err := database.DB.Exec(
 		context.Background(),
 		query,
-		playlist_id,
-		video_id,
+		playlistID,
+		videoID,
 	)
 	return err
 }
 
+// DeleteVideoFromPlaylist removes a video entry from a specific playlist.
 func DeleteVideoFromPlaylist(
-	playlist_id uuid.UUID,
-	video_id uuid.UUID,
+	playlistID uuid.UUID,
+	videoID uuid.UUID,
 ) error {
 
 	query := `
@@ -133,12 +137,13 @@ func DeleteVideoFromPlaylist(
 	_, err := database.DB.Exec(
 		context.Background(),
 		query,
-		playlist_id,
-		video_id,
+		playlistID,
+		videoID,
 	)
 	return err
 }
 
+// UpdatePlaylist modifies attributes of an existing playlist.
 func UpdatePlaylist(playlist *models.Playlist) (*models.Playlist, error) {
 
 	query := `
@@ -177,7 +182,8 @@ func UpdatePlaylist(playlist *models.Playlist) (*models.Playlist, error) {
 	return &updatedPlaylist, nil
 }
 
-func GetUserPlaylistWithVideos(playlist_id uuid.UUID,
+// GetUserPlaylistWithVideos retrieves playlist details along with its videos.
+func GetUserPlaylistWithVideos(playlistID uuid.UUID,
 ) (*PlaylistResponse, error) {
 
 	playlistQuery := `
@@ -193,7 +199,7 @@ func GetUserPlaylistWithVideos(playlist_id uuid.UUID,
 	err := database.DB.QueryRow(
 		context.Background(),
 		playlistQuery,
-		playlist_id,
+		playlistID,
 	).Scan(
 		&response.ID,
 		&response.Type,
@@ -223,7 +229,7 @@ func GetUserPlaylistWithVideos(playlist_id uuid.UUID,
 	rows, err := database.DB.Query(
 		context.Background(),
 		videosQuery,
-		playlist_id,
+		playlistID,
 	)
 
 	if err != nil {
@@ -236,7 +242,7 @@ func GetUserPlaylistWithVideos(playlist_id uuid.UUID,
 		err := rows.Scan(
 			&video.ID,
 			&video.Title,
-			&video.Thumbnail_Url,
+			&video.ThumbnailURL,
 			&video.Views,
 		)
 		if err != nil {
@@ -248,7 +254,8 @@ func GetUserPlaylistWithVideos(playlist_id uuid.UUID,
 	return &response, nil
 }
 
-func GetCoursePlaylist(playlist_id uuid.UUID,
+// GetCoursePlaylist fetches structured playlist details tailored for structural courses.
+func GetCoursePlaylist(playlistID uuid.UUID,
 ) (*CoursePlaylistResponse, error) {
 
 	playlistQuery := `
@@ -266,7 +273,7 @@ func GetCoursePlaylist(playlist_id uuid.UUID,
 	err := database.DB.QueryRow(
 		context.Background(),
 		playlistQuery,
-		playlist_id,
+		playlistID,
 	).Scan(
 		&response.ID,
 		&response.Type,
@@ -299,7 +306,7 @@ func GetCoursePlaylist(playlist_id uuid.UUID,
 	rows, err := database.DB.Query(
 		context.Background(),
 		videosQuery,
-		playlist_id,
+		playlistID,
 	)
 
 	if err != nil {
@@ -312,7 +319,7 @@ func GetCoursePlaylist(playlist_id uuid.UUID,
 		err := rows.Scan(
 			&video.ID,
 			&video.Title,
-			&video.Thumbnail_Url,
+			&video.ThumbnailURL,
 			&video.Views,
 		)
 		if err != nil {
@@ -324,9 +331,10 @@ func GetCoursePlaylist(playlist_id uuid.UUID,
 	return &response, nil
 }
 
+// VerifyPlaylistOwnership checks if the user possesses ownership to the playlist.
 func VerifyPlaylistOwnership(
-	playlist_id uuid.UUID,
-	user_id uuid.UUID,
+	playlistID uuid.UUID,
+	userID uuid.UUID,
 ) error {
 
 	query := `
@@ -340,12 +348,13 @@ func VerifyPlaylistOwnership(
 	return database.DB.QueryRow(
 		context.Background(),
 		query,
-		playlist_id,
-		user_id,
+		playlistID,
+		userID,
 	).Scan(&id)
 }
 
-func GetPlaylistById(playlist_id uuid.UUID) (*models.Playlist, error) {
+// GetPlaylistByID retrieves a standard playlist object by its ID.
+func GetPlaylistByID(playlistID uuid.UUID) (*models.Playlist, error) {
 	query := `
 		SELECT 
 		playlist_id, type, title, description, 
@@ -359,7 +368,7 @@ func GetPlaylistById(playlist_id uuid.UUID) (*models.Playlist, error) {
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		playlist_id,
+		playlistID,
 	).Scan(
 		&playlist.ID,
 		&playlist.Type,

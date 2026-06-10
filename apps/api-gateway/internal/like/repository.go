@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// IsVideoLiked checks if a user has liked a video.
 func IsVideoLiked(userID, videoID uuid.UUID) (bool, error) {
 
 	query := `
@@ -30,6 +31,7 @@ func IsVideoLiked(userID, videoID uuid.UUID) (bool, error) {
 	return liked, err
 }
 
+// LikeVideo registers a like from a user for a video.
 func LikeVideo(userID, videoID uuid.UUID) error {
 
 	query := `
@@ -48,6 +50,7 @@ func LikeVideo(userID, videoID uuid.UUID) error {
 	return err
 }
 
+// UnlikeVideo removes a user's like from a video.
 func UnlikeVideo(userID, videoID uuid.UUID) error {
 
 	query := `
@@ -66,6 +69,7 @@ func UnlikeVideo(userID, videoID uuid.UUID) error {
 	return err
 }
 
+// GetTotalVideoLikes returns total likes for a video.
 func GetTotalVideoLikes(videoID uuid.UUID) (int64, error) {
 
 	query := `
@@ -85,6 +89,7 @@ func GetTotalVideoLikes(videoID uuid.UUID) (int64, error) {
 	return total, err
 }
 
+// IsCommentLiked checks if a user has liked a comment.
 func IsCommentLiked(userID, commentID uuid.UUID) (bool, error) {
 
 	query := `
@@ -108,6 +113,7 @@ func IsCommentLiked(userID, commentID uuid.UUID) (bool, error) {
 	return liked, err
 }
 
+// LikeComment registers a like from a user for a comment.
 func LikeComment(userID, commentID uuid.UUID) error {
 
 	query := `
@@ -126,6 +132,7 @@ func LikeComment(userID, commentID uuid.UUID) error {
 	return err
 }
 
+// UnlikeComment removes a user's like from a comment.
 func UnlikeComment(userID, commentID uuid.UUID) error {
 
 	query := `
@@ -144,6 +151,7 @@ func UnlikeComment(userID, commentID uuid.UUID) error {
 	return err
 }
 
+// GetTotalCommentLikes returns total likes for a comment.
 func GetTotalCommentLikes(commentID uuid.UUID) (int64, error) {
 
 	query := `

@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// ChangePasswordHandler handles the route to change passwords.
 func ChangePasswordHandler(c *gin.Context) {
 
 	var req ChangePasswordRequest
@@ -56,6 +57,7 @@ func ChangePasswordHandler(c *gin.Context) {
 	))
 }
 
+// GetUserHandler handles the route to read a user profile.
 func GetUserHandler(c *gin.Context) {
 
 	ctxUser, exists := c.Get("user")
@@ -84,13 +86,13 @@ func GetUserHandler(c *gin.Context) {
 	))
 }
 
+// UpdateAccountHandler handles the route to edit account settings.
 func UpdateAccountHandler(c *gin.Context) {
 
 	var req UpdateAccountRequest
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
-			"invalid request payload",
-			nil,
+			"invalid request payload", nil,
 		))
 		return
 	}
@@ -98,8 +100,7 @@ func UpdateAccountHandler(c *gin.Context) {
 	ctxUser, exists := c.Get("user")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, utils.NewResponse(
-			"Session user context not found",
-			nil,
+			"Session user context not found", nil,
 		))
 		return
 	}
@@ -107,60 +108,61 @@ func UpdateAccountHandler(c *gin.Context) {
 	user, ok := ctxUser.(*models.User)
 	if !ok {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
-			"Internal context type mismatch",
-			nil,
+			"Internal context type mismatch", nil,
 		))
 		return
 	}
 
 	file, err := c.FormFile("profile_pic")
 
-	var updated_user *models.User
+	var updatedUser *models.User
 
 	if err == nil {
-		if err := utils.IsImageAllowed(file); err != nil {
+		if err = utils.IsImageAllowed(file); err != nil {
 			c.JSON(http.StatusBadRequest, utils.NewResponse(
-				err.Error(),
-				nil,
+				err.Error(), nil,
 			))
 			return
 		}
 
-		os.MkdirAll("./temp", os.ModePerm)
+		err = os.MkdirAll("./temp", os.ModePerm)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, utils.NewResponse(
+				err.Error(), nil,
+			))
+			return
+		}
 
 		// unique file name
-		tempPath := fmt.Sprintf(
-			"./temp/%s%s",
-			uuid.New().String(),
+		tempPath := fmt.Sprintf("./temp/%s%s", uuid.New().String(),
 			filepath.Ext(file.Filename),
 		)
 
-		if err := c.SaveUploadedFile(file, tempPath); err != nil {
+		if err = c.SaveUploadedFile(file, tempPath); err != nil {
 			c.JSON(http.StatusInternalServerError, utils.NewResponse(
-				"failed to save uploaded file",
-				nil,
+				"failed to save uploaded file", nil,
 			))
 			return
 		}
-		defer os.Remove(tempPath)
 
-		updated_user, err = UpdateUserProfile(req, user.ID, &tempPath)
+		defer func() {
+			_ = os.Remove(tempPath)
+		}()
+
+		updatedUser, err = UpdateUserProfile(req, user.ID, &tempPath)
 	} else {
-		updated_user, err = UpdateUserProfile(req, user.ID, nil)
+		updatedUser, err = UpdateUserProfile(req, user.ID, nil)
 	}
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
-			"failed to update account",
-			nil,
+			"failed to update account", nil,
 		))
 		return
 	}
 
 	c.JSON(http.StatusOK, utils.NewResponse(
 		"user data updated successfully",
-		gin.H{
-			"user": updated_user,
-		},
+		gin.H{"user": updatedUser},
 	))
 }

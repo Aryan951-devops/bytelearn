@@ -11,10 +11,14 @@ import (
 )
 
 var (
+	// ErrQuizAlreadySubmitted is returned when a user tries to submit a quiz again.
 	ErrQuizAlreadySubmitted = errors.New("quiz already submitted")
-	ErrAttemptExpired       = errors.New("quiz attempt has expired, please start a new one")
+
+	// ErrAttemptExpired is returned when a quiz run expires.
+	ErrAttemptExpired = errors.New("quiz attempt has expired, please start a new one")
 )
 
+// VerifyAndProcessAttemptState checks and updates a quiz attempt.
 func VerifyAndProcessAttemptState(attempt *models.QuizAttempt,
 ) (*models.QuizAttempt, error) {
 
@@ -48,6 +52,7 @@ func VerifyAndProcessAttemptState(attempt *models.QuizAttempt,
 	return attempt, nil
 }
 
+// CreateQuizService handles creating a new quiz.
 func CreateQuizService(req CreateQuizRequest,
 ) (*models.Quiz, error) {
 
@@ -60,26 +65,27 @@ func CreateQuizService(req CreateQuizRequest,
 	return CreateQuiz(quiz, req.Questions)
 }
 
+// StartQuizService records when a user starts a quiz.
 func StartQuizService(
-	quizId uuid.UUID,
-	userId uuid.UUID,
+	quizID uuid.UUID,
+	userID uuid.UUID,
 ) (*StartQuizResponse, error) {
 
 	attempt, err := CreateQuizAttempt(
-		quizId,
-		userId,
+		quizID,
+		userID,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	quiz, err := GetQuizByID(quizId)
+	quiz, err := GetQuizByID(quizID)
 	if err != nil {
 		return nil, err
 	}
 
-	questions, err := GetQuizQuestions(quizId)
+	questions, err := GetQuizQuestions(quizID)
 	if err != nil {
 		return nil, err
 	}
@@ -93,16 +99,16 @@ func StartQuizService(
 	}, nil
 }
 
+// SubmitQuizService saves answers and scores a quiz submission.
 func SubmitQuizService(
-	attemptId uuid.UUID,
+	attemptID uuid.UUID,
 	req SubmitQuizRequest,
 ) (*SubmitQuizResponse, error) {
 
-	attempt, err := GetAttemptByID(attemptId)
+	attempt, err := GetAttemptByID(attemptID)
 	if err != nil {
 		return nil, err
 	}
-
 	attempt, err = VerifyAndProcessAttemptState(attempt)
 	if err != nil {
 		return nil, err
@@ -119,7 +125,6 @@ func SubmitQuizService(
 	for _, q := range questions {
 
 		total += q.Marks
-
 		for _, ans := range req.Answers {
 
 			if ans.QuestionID != q.ID {
@@ -141,7 +146,7 @@ func SubmitQuizService(
 					sort.Slice(q.CorrectOptions, func(i, j int) bool {
 						return i < j
 					})
-					for idx, _ := range q.CorrectOptions {
+					for idx := range q.CorrectOptions {
 						if ans.SelectedOption[idx] != q.CorrectOptions[idx] {
 							flag = true
 							break
@@ -178,26 +183,29 @@ func SubmitQuizService(
 	return SubmitAttempt(attempt)
 }
 
-func GetAttemptResultService(attemptId uuid.UUID,
+// GetAttemptResultService gets the final result for a quiz attempt.
+func GetAttemptResultService(attemptID uuid.UUID,
 ) (*QuizAttemptResponse, error) {
 
-	return GetAttemptResultByID(attemptId)
+	return GetAttemptResultByID(attemptID)
 }
 
+// GetAllQuizesOfPlaylistService gets all quizzes linked to a playlist.
 func GetAllQuizesOfPlaylistService(
-	playlistId uuid.UUID,
+	playlistID uuid.UUID,
 ) ([]models.Quiz, error) {
 
-	return GetAllQuizesOfPlaylist(playlistId)
+	return GetAllQuizesOfPlaylist(playlistID)
 }
 
+// GetAllAttemptsOfQuizService gets all history attempts of a user for a quiz.
 func GetAllAttemptsOfQuizService(
-	quizId uuid.UUID,
-	userId uuid.UUID,
+	quizID uuid.UUID,
+	userID uuid.UUID,
 ) ([]models.QuizAttempt, error) {
 
 	return GetAttemptsOfQuiz(
-		quizId,
-		userId,
+		quizID,
+		userID,
 	)
 }

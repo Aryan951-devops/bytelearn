@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// RegisterUser processes logic for user registration.
 func RegisterUser(req RegisterRequest) (*models.User, error) {
 
 	existingUser, _ := GetUserByEmail(req.Email)
@@ -40,6 +41,7 @@ func RegisterUser(req RegisterRequest) (*models.User, error) {
 	return user, nil
 }
 
+// LoginUser processes logic for user authentication.
 func LoginUser(req LoginRequest) (string, error) {
 
 	user, err := GetUserByEmail(req.Email)
@@ -56,10 +58,10 @@ func LoginUser(req LoginRequest) (string, error) {
 		return "", errors.New("invalid credentials")
 	}
 
-	access_token, err := GenerateJWT(user.ID)
+	accessToken, err := GenerateJWT(user.ID)
 	if err != nil {
 		return "", err
 	}
 
-	return access_token, nil
+	return accessToken, nil
 }

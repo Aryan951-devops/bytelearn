@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetAllCommentOfVideoHandler handles the API route to fetch comments.
 func GetAllCommentOfVideoHandler(c *gin.Context) {
 
 	videoID, err := uuid.Parse(c.Param("videoId"))
@@ -37,6 +38,7 @@ func GetAllCommentOfVideoHandler(c *gin.Context) {
 	))
 }
 
+// CreateCommentHandler handles the API route to submit a new comment.
 func CreateCommentHandler(c *gin.Context) {
 
 	videoID, err := uuid.Parse(c.Param("videoId"))
@@ -50,7 +52,8 @@ func CreateCommentHandler(c *gin.Context) {
 
 	var req CommentRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil {
+	err = c.ShouldBindJSON(&req)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid request payload",
 			nil,
@@ -86,6 +89,7 @@ func CreateCommentHandler(c *gin.Context) {
 	))
 }
 
+// DeleteCommentHandler handles the API route to remove a comment.
 func DeleteCommentHandler(c *gin.Context) {
 
 	commentID, err := uuid.Parse(c.Param("commentId"))
@@ -127,6 +131,7 @@ func DeleteCommentHandler(c *gin.Context) {
 	))
 }
 
+// UpdateCommentHandler handles the API route to edit a comment.
 func UpdateCommentHandler(c *gin.Context) {
 
 	commentID, err := uuid.Parse(c.Param("commentId"))
@@ -140,7 +145,8 @@ func UpdateCommentHandler(c *gin.Context) {
 
 	var req CommentRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil {
+	err = c.ShouldBindJSON(&req)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.NewResponse(
 			"invalid request payload",
 			nil,

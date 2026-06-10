@@ -10,7 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func FetchAllVideosOfUser(user_id uuid.UUID) (*[]models.Video, error) {
+// FetchAllVideosOfUser finds all videos owned by a user.
+func FetchAllVideosOfUser(userID uuid.UUID) (*[]models.Video, error) {
 	query := `
 		SELECT video_id, title, description,
 		videofile_url, videofile_public_id, thumbnail_url,
@@ -20,7 +21,7 @@ func FetchAllVideosOfUser(user_id uuid.UUID) (*[]models.Video, error) {
 		WHERE uploaded_by = $1
 	`
 
-	rows, err := database.DB.Query(context.Background(), query, user_id)
+	rows, err := database.DB.Query(context.Background(), query, userID)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
@@ -55,6 +56,7 @@ func FetchAllVideosOfUser(user_id uuid.UUID) (*[]models.Video, error) {
 	return &videos, nil
 }
 
+// FetchAllVideos finds all recorded videos.
 func FetchAllVideos() (*[]models.Video, error) {
 	query := `
 		SELECT video_id, title, description,
@@ -99,7 +101,8 @@ func FetchAllVideos() (*[]models.Video, error) {
 	return &videos, nil
 }
 
-func FetchVideoByID(video_id uuid.UUID) (*models.Video, error) {
+// FetchVideoByID finds a single video using its ID.
+func FetchVideoByID(videoID uuid.UUID) (*models.Video, error) {
 	query := `
 		UPDATE videos
 			SET views = views + 1,
@@ -117,7 +120,7 @@ func FetchVideoByID(video_id uuid.UUID) (*models.Video, error) {
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		video_id,
+		videoID,
 	).Scan(
 		&video.ID,
 		&video.Title,
@@ -140,7 +143,8 @@ func FetchVideoByID(video_id uuid.UUID) (*models.Video, error) {
 	return &video, nil
 }
 
-func DeleteVideoByID(video_id uuid.UUID) error {
+// DeleteVideoByID removes a video entry using its ID.
+func DeleteVideoByID(videoID uuid.UUID) error {
 	query := `
 		DELETE FROM videos
 		WHERE video_id = $1
@@ -149,12 +153,13 @@ func DeleteVideoByID(video_id uuid.UUID) error {
 	_, err := database.DB.Exec(
 		context.Background(),
 		query,
-		video_id,
+		videoID,
 	)
 
 	return err
 }
 
+// CreateVideo saves a new video record.
 func CreateVideo(video *models.Video) (*models.Video, error) {
 
 	query := `
@@ -203,6 +208,7 @@ func CreateVideo(video *models.Video) (*models.Video, error) {
 	return &createdVideo, nil
 }
 
+// UpdateVideoByID saves edits made to a video file.
 func UpdateVideoByID(video *models.Video) (*models.Video, error) {
 
 	query := `
@@ -220,7 +226,7 @@ func UpdateVideoByID(video *models.Video) (*models.Video, error) {
 			views, uploaded_by, created_at, updated_at
 	`
 
-	var updated_video models.Video
+	var updatedVideo models.Video
 	err := database.DB.QueryRow(context.Background(),
 		query,
 		video.Title,
@@ -229,18 +235,18 @@ func UpdateVideoByID(video *models.Video) (*models.Video, error) {
 		video.Thumbnail_PublicID,
 		video.ID,
 	).Scan(
-		&updated_video.ID,
-		&updated_video.Title,
-		&updated_video.Description,
-		&updated_video.Videofile_Url,
-		&updated_video.Videofile_PublicID,
-		&updated_video.Thumbnail_Url,
-		&updated_video.Thumbnail_PublicID,
-		&updated_video.DurationSeconds,
-		&updated_video.Views,
-		&updated_video.UploadedBy,
-		&updated_video.CreatedAt,
-		&updated_video.UpdatedAt,
+		&updatedVideo.ID,
+		&updatedVideo.Title,
+		&updatedVideo.Description,
+		&updatedVideo.Videofile_Url,
+		&updatedVideo.Videofile_PublicID,
+		&updatedVideo.Thumbnail_Url,
+		&updatedVideo.Thumbnail_PublicID,
+		&updatedVideo.DurationSeconds,
+		&updatedVideo.Views,
+		&updatedVideo.UploadedBy,
+		&updatedVideo.CreatedAt,
+		&updatedVideo.UpdatedAt,
 	)
 
 	if err != nil {
@@ -250,5 +256,5 @@ func UpdateVideoByID(video *models.Video) (*models.Video, error) {
 		return nil, err
 	}
 
-	return &updated_video, nil
+	return &updatedVideo, nil
 }

@@ -9,10 +9,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func ChangePassword(new_password string, user_id uuid.UUID) error {
+// ChangePassword processes the request to change a password.
+func ChangePassword(newPassword string, userID uuid.UUID) error {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword(
-		[]byte(new_password),
+		[]byte(newPassword),
 		bcrypt.DefaultCost,
 	)
 
@@ -20,7 +21,7 @@ func ChangePassword(new_password string, user_id uuid.UUID) error {
 		return err
 	}
 
-	err = UpdatePassword(string(hashedPassword), user_id)
+	err = UpdatePassword(string(hashedPassword), userID)
 	if err != nil {
 		return err
 	}
@@ -28,12 +29,13 @@ func ChangePassword(new_password string, user_id uuid.UUID) error {
 	return nil
 }
 
-func UpdateUserProfile(req UpdateAccountRequest, user_id uuid.UUID,
+// UpdateUserProfile processes user detail changes.
+func UpdateUserProfile(req UpdateAccountRequest, userID uuid.UUID,
 	tempPath *string) (*models.User, error) {
 
 	var user models.User
 
-	user.ID = user_id
+	user.ID = userID
 
 	if strings.TrimSpace(req.PhoneNo) != "" {
 		user.PhoneNo = &req.PhoneNo
@@ -62,11 +64,11 @@ func UpdateUserProfile(req UpdateAccountRequest, user_id uuid.UUID,
 		user.ProfilePic_PublicID = &imageData.PublicID
 	}
 
-	updated_user, err := UpdateUserByID(&user)
+	updatedUser, err := UpdateUserByID(&user)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return updated_user, nil
+	return updatedUser, nil
 }

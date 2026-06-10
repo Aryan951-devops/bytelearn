@@ -1,4 +1,5 @@
-package cloudinaryUploader
+// Package cloudinaryuploader provides file uploading tools using Cloudinary.
+package cloudinaryuploader
 
 import (
 	"context"
@@ -10,15 +11,17 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
+// Cloudinary handles uploading files to Cloudinary storage.
 type Cloudinary struct {
 	Client *cloudinary.Cloudinary
 }
 
-func NewCloudinaryUploader(api_key, api_secret, cloud_name string) (*Cloudinary, error) {
+// NewCloudinaryUploader creates a new uploader instance.
+func NewCloudinaryUploader(apiKey, apiSecret, cloudName string) (*Cloudinary, error) {
 	cld, err := cloudinary.NewFromParams(
-		cloud_name,
-		api_key,
-		api_secret,
+		cloudName,
+		apiKey,
+		apiSecret,
 	)
 	if err != nil {
 		return nil, err
@@ -29,11 +32,13 @@ func NewCloudinaryUploader(api_key, api_secret, cloud_name string) (*Cloudinary,
 	}, nil
 }
 
+// SignParameters signs the request parameters for security.
 func (c *Cloudinary) SignParameters(params url.Values, secret string) (string, error) {
 	// Cloudinary SDK's built-in parameter signing utility
 	return api.SignParameters(params, secret)
 }
 
+// UploadProfilePic uploads a user profile image.
 func (c *Cloudinary) UploadProfilePic(filePath string) utils.ResponseFromUpload {
 
 	resp, err := c.Client.Upload.Upload(
@@ -59,6 +64,7 @@ func (c *Cloudinary) UploadProfilePic(filePath string) utils.ResponseFromUpload 
 	}
 }
 
+// UploadThumbnail uploads a video thumbnail image.
 func (c *Cloudinary) UploadThumbnail(filepath string) utils.ResponseFromUpload {
 	resp, err := c.Client.Upload.Upload(
 		context.Background(),
@@ -83,6 +89,7 @@ func (c *Cloudinary) UploadThumbnail(filepath string) utils.ResponseFromUpload {
 	}
 }
 
+// DeleteByPublicID deletes a file using its ID.
 func (c *Cloudinary) DeleteByPublicID(publicID string) error {
 	_, err := c.Client.Upload.Destroy(
 		context.Background(),

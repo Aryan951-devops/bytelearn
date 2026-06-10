@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateQuiz saves a quiz record to the database.
 func CreateQuiz(
 	quiz *models.Quiz,
 	questions []CreateQuizQuestion,
@@ -18,7 +19,9 @@ func CreateQuiz(
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback(context.Background())
+	defer func() {
+		_ = tx.Rollback(context.Background())
+	}()
 
 	query := `
 	INSERT INTO quizzes
@@ -30,7 +33,7 @@ func CreateQuiz(
 	created_at,updated_at
 	`
 
-	var new_quiz models.Quiz
+	var newQuiz models.Quiz
 
 	err = tx.QueryRow(
 		context.Background(),
@@ -39,12 +42,12 @@ func CreateQuiz(
 		quiz.PlaylistID,
 		quiz.DurationMinutes,
 	).Scan(
-		&new_quiz.ID,
-		&new_quiz.Title,
-		&new_quiz.PlaylistID,
-		&new_quiz.DurationMinutes,
-		&new_quiz.CreatedAt,
-		&new_quiz.UpdatedAt,
+		&newQuiz.ID,
+		&newQuiz.Title,
+		&newQuiz.PlaylistID,
+		&newQuiz.DurationMinutes,
+		&newQuiz.CreatedAt,
+		&newQuiz.UpdatedAt,
 	)
 
 	if err != nil {
@@ -53,7 +56,7 @@ func CreateQuiz(
 
 	for _, q := range questions {
 
-		question_query := `
+		questionQuery := `
 			INSERT INTO quiz_questions
 			(
 				quiz_id, type, question, options,
@@ -64,10 +67,10 @@ func CreateQuiz(
 			($1,$2,$3,$4,$5,$6,$7,$8,$9)
 		`
 
-		_, err := tx.Exec(
+		_, err = tx.Exec(
 			context.Background(),
-			question_query,
-			new_quiz.ID,
+			questionQuery,
+			newQuiz.ID,
 			q.Type,
 			q.Question,
 			q.Options,
@@ -85,12 +88,13 @@ func CreateQuiz(
 
 	err = tx.Commit(context.Background())
 
-	return &new_quiz, err
+	return &newQuiz, err
 }
 
+// CreateQuizAttempt records a user beginning a quiz.
 func CreateQuizAttempt(
-	quizId uuid.UUID,
-	userId uuid.UUID,
+	quizID uuid.UUID,
+	userID uuid.UUID,
 ) (*models.QuizAttempt, error) {
 
 	query := `
@@ -108,8 +112,8 @@ func CreateQuizAttempt(
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		quizId,
-		userId,
+		quizID,
+		userID,
 		models.AttemptInProgress,
 	).Scan(
 		&attempt.ID,
@@ -124,7 +128,8 @@ func CreateQuizAttempt(
 	return &attempt, err
 }
 
-func GetQuizByID(quizId uuid.UUID) (*models.Quiz, error) {
+// GetQuizByID finds a quiz using its ID.
+func GetQuizByID(quizID uuid.UUID) (*models.Quiz, error) {
 
 	query := `
 		SELECT quiz_id, title, playlist_id,
@@ -138,7 +143,7 @@ func GetQuizByID(quizId uuid.UUID) (*models.Quiz, error) {
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		quizId,
+		quizID,
 	).Scan(
 		&quiz.ID,
 		&quiz.Title,
@@ -155,7 +160,8 @@ func GetQuizByID(quizId uuid.UUID) (*models.Quiz, error) {
 	return &quiz, nil
 }
 
-func GetQuizDetailedQuestions(quizId uuid.UUID,
+// GetQuizDetailedQuestions fetches questions with details.
+func GetQuizDetailedQuestions(quizID uuid.UUID,
 ) ([]models.QuizQuestion, error) {
 
 	query := `
@@ -169,7 +175,7 @@ func GetQuizDetailedQuestions(quizId uuid.UUID,
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		quizId,
+		quizID,
 	)
 
 	if err != nil {
@@ -203,7 +209,8 @@ func GetQuizDetailedQuestions(quizId uuid.UUID,
 	return quiz_questions, nil
 }
 
-func GetQuizQuestions(quizId uuid.UUID) ([]QuizQuestionMetadata, error) {
+// GetQuizQuestions fetches a list of questions for a quiz.
+func GetQuizQuestions(quizID uuid.UUID) ([]QuizQuestionMetadata, error) {
 
 	query := `
 		SELECT question_id, type, question,
@@ -215,7 +222,7 @@ func GetQuizQuestions(quizId uuid.UUID) ([]QuizQuestionMetadata, error) {
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		quizId,
+		quizID,
 	)
 
 	if err != nil {
@@ -223,7 +230,7 @@ func GetQuizQuestions(quizId uuid.UUID) ([]QuizQuestionMetadata, error) {
 	}
 	defer rows.Close()
 
-	quiz_questions := []QuizQuestionMetadata{}
+	quizQuestions := []QuizQuestionMetadata{}
 
 	for rows.Next() {
 		var ques QuizQuestionMetadata
@@ -241,13 +248,14 @@ func GetQuizQuestions(quizId uuid.UUID) ([]QuizQuestionMetadata, error) {
 			return nil, err
 		}
 
-		quiz_questions = append(quiz_questions, ques)
+		quizQuestions = append(quizQuestions, ques)
 	}
 
-	return quiz_questions, nil
+	return quizQuestions, nil
 }
 
-func GetAttemptByID(attemptId uuid.UUID,
+// GetAttemptByID gets a quiz attempt file by its ID.
+func GetAttemptByID(attemptID uuid.UUID,
 ) (*models.QuizAttempt, error) {
 
 	query := `
@@ -264,7 +272,7 @@ func GetAttemptByID(attemptId uuid.UUID,
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		attemptId,
+		attemptID,
 	).Scan(
 		&attempt.ID,
 		&attempt.QuizID,
@@ -284,7 +292,8 @@ func GetAttemptByID(attemptId uuid.UUID,
 	return &attempt, nil
 }
 
-func GetAttemptResultByID(attemptId uuid.UUID) (*QuizAttemptResponse, error) {
+// GetAttemptResultByID returns results for an attempt ID.
+func GetAttemptResultByID(attemptID uuid.UUID) (*QuizAttemptResponse, error) {
 
 	query := `
 	SELECT
@@ -300,7 +309,7 @@ func GetAttemptResultByID(attemptId uuid.UUID) (*QuizAttemptResponse, error) {
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		attemptId,
+		attemptID,
 	).Scan(
 		&attempt.ID,
 		&attempt.QuizID,
@@ -363,6 +372,7 @@ func GetAttemptResultByID(attemptId uuid.UUID) (*QuizAttemptResponse, error) {
 	return response, nil
 }
 
+// SubmitAttempt submits the attempt.
 func SubmitAttempt(attempt *models.QuizAttempt,
 ) (*SubmitQuizResponse, error) {
 
@@ -403,7 +413,8 @@ func SubmitAttempt(attempt *models.QuizAttempt,
 	return &response, nil
 }
 
-func GetAllQuizesOfPlaylist(playlistId uuid.UUID,
+// GetAllQuizesOfPlaylist reads all quizzes in a playlist folder.
+func GetAllQuizesOfPlaylist(playlistID uuid.UUID,
 ) ([]models.Quiz, error) {
 
 	query := `
@@ -416,7 +427,7 @@ func GetAllQuizesOfPlaylist(playlistId uuid.UUID,
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		playlistId,
+		playlistID,
 	)
 
 	if err != nil {
@@ -430,7 +441,7 @@ func GetAllQuizesOfPlaylist(playlistId uuid.UUID,
 
 		var quiz models.Quiz
 
-		err := rows.Scan(
+		err = rows.Scan(
 			&quiz.ID,
 			&quiz.Title,
 			&quiz.PlaylistID,
@@ -454,9 +465,10 @@ func GetAllQuizesOfPlaylist(playlistId uuid.UUID,
 	return quizzes, nil
 }
 
+// GetAttemptsOfQuiz finds user's attempts on a quiz.
 func GetAttemptsOfQuiz(
-	quizId uuid.UUID,
-	userId uuid.UUID,
+	quizID uuid.UUID,
+	userID uuid.UUID,
 ) ([]models.QuizAttempt, error) {
 
 	query := `
@@ -472,8 +484,8 @@ func GetAttemptsOfQuiz(
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		quizId,
-		userId,
+		quizID,
+		userID,
 	)
 
 	if err != nil {
@@ -505,9 +517,10 @@ func GetAttemptsOfQuiz(
 	return attempts, nil
 }
 
+// VerifyAttemptOwnership checks if a user owns a quiz attempt record.
 func VerifyAttemptOwnership(
-	attemptId uuid.UUID,
-	userId uuid.UUID,
+	attemptID uuid.UUID,
+	userID uuid.UUID,
 ) error {
 
 	query := `
@@ -521,13 +534,14 @@ func VerifyAttemptOwnership(
 	return database.DB.QueryRow(
 		context.Background(),
 		query,
-		attemptId,
-		userId,
+		attemptID,
+		userID,
 	).Scan(&id)
 }
 
+// GetQuizDurationByID looks up the time limit for a quiz.
 func GetQuizDurationByID(
-	quizId uuid.UUID,
+	quizID uuid.UUID,
 ) (int32, error) {
 
 	query := `
@@ -536,16 +550,16 @@ func GetQuizDurationByID(
 		WHERE quiz_id = $1
 	`
 
-	var time_duration int32
+	var timeDuration int32
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		quizId,
-	).Scan(&time_duration)
+		quizID,
+	).Scan(&timeDuration)
 
 	if err != nil {
 		return 0, err
 	}
 
-	return time_duration, nil
+	return timeDuration, nil
 }

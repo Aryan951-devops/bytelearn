@@ -10,7 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func UpdatePassword(hashed_password string, user_id uuid.UUID) error {
+// UpdatePassword changes the password string in the database.
+func UpdatePassword(hashedPassword string, userID uuid.UUID) error {
 
 	query := `
 		UPDATE users
@@ -22,8 +23,8 @@ func UpdatePassword(hashed_password string, user_id uuid.UUID) error {
 	_, err := database.DB.Exec(
 		context.Background(),
 		query,
-		hashed_password,
-		user_id,
+		hashedPassword,
+		userID,
 	)
 
 	if err != nil {
@@ -33,6 +34,7 @@ func UpdatePassword(hashed_password string, user_id uuid.UUID) error {
 	return nil
 }
 
+// UpdateUserByID updates profile details in the database.
 func UpdateUserByID(user *models.User) (*models.User, error) {
 
 	query := `
@@ -51,7 +53,7 @@ func UpdateUserByID(user *models.User) (*models.User, error) {
 			profile_pic_url, profile_pic_public_id, password_hash,
 			city, state, pincode, role, created_at, updated_at
 	`
-	var updated_user models.User
+	var updatedUser models.User
 	err := database.DB.QueryRow(context.Background(),
 		query,
 		user.PhoneNo,
@@ -62,20 +64,20 @@ func UpdateUserByID(user *models.User) (*models.User, error) {
 		user.ProfilePic_PublicID,
 		user.ID,
 	).Scan(
-		&updated_user.ID,
-		&updated_user.Username,
-		&updated_user.Name,
-		&updated_user.Email,
-		&updated_user.PhoneNo,
-		&updated_user.ProfilePic_Url,
-		&updated_user.ProfilePic_PublicID,
-		&updated_user.PasswordHash,
-		&updated_user.City,
-		&updated_user.State,
-		&updated_user.Pincode,
-		&updated_user.Role,
-		&updated_user.CreatedAt,
-		&updated_user.UpdatedAt,
+		&updatedUser.ID,
+		&updatedUser.Username,
+		&updatedUser.Name,
+		&updatedUser.Email,
+		&updatedUser.PhoneNo,
+		&updatedUser.ProfilePic_Url,
+		&updatedUser.ProfilePic_PublicID,
+		&updatedUser.PasswordHash,
+		&updatedUser.City,
+		&updatedUser.State,
+		&updatedUser.Pincode,
+		&updatedUser.Role,
+		&updatedUser.CreatedAt,
+		&updatedUser.UpdatedAt,
 	)
 
 	if err != nil {
@@ -85,5 +87,5 @@ func UpdateUserByID(user *models.User) (*models.User, error) {
 		return nil, err
 	}
 
-	return &updated_user, nil
+	return &updatedUser, nil
 }

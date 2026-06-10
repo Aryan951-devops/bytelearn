@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// GenerateJWT creates a new access token for a user.
 func GenerateJWT(userID uuid.UUID) (string, error) {
 
 	claims := jwt.MapClaims{
@@ -17,5 +18,5 @@ func GenerateJWT(userID uuid.UUID) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(config.AppConfig.JWT_SECRET))
+	return token.SignedString([]byte(config.AppConfig.JWTSecret))
 }

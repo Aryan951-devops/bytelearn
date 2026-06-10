@@ -1,3 +1,4 @@
+// Package playlist manages user custom video collections and course playlists.
 package playlist
 
 import (
@@ -6,11 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
+// UpdatePlaylistRequest defines payload for updating a playlist.
 type UpdatePlaylistRequest struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 }
 
+// CreatePlaylistRequest defines payload for creating a playlist.
 type CreatePlaylistRequest struct {
 	Type        string     `json:"type" binding:"required"`
 	Title       string     `json:"title" binding:"required"`
@@ -18,13 +21,15 @@ type CreatePlaylistRequest struct {
 	CourseID    *uuid.UUID `json:"course_id"`
 }
 
+// VideoMetadata holds snippet details of a video inside a playlist.
 type VideoMetadata struct {
-	ID            uuid.UUID `json:"video_id"`
-	Title         string    `json:"title"`
-	Thumbnail_Url *string   `json:"thumbnail_url"`
-	Views         int64     `json:"views"`
+	ID           uuid.UUID `json:"video_id"`
+	Title        string    `json:"title"`
+	ThumbnailURL *string   `json:"thumbnail_url"`
+	Views        int64     `json:"views"`
 }
 
+// PlaylistResponse represents the playlist output structure.
 type PlaylistResponse struct {
 	ID          uuid.UUID       `json:"playlist_id"`
 	Type        string          `json:"type"`
@@ -37,6 +42,7 @@ type PlaylistResponse struct {
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
+// CoursePlaylistResponse represents specialized course playlist output structure.
 type CoursePlaylistResponse struct {
 	PlaylistResponse
 	EducatorID         string  `json:"educator_user_id"`

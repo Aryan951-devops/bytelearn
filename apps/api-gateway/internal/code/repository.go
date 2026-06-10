@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCodingPractice saves a coding practice set.
 func CreateCodingPractice(practice *models.CodingPractice,
 ) (*models.CodingPractice, error) {
 
@@ -21,7 +22,7 @@ func CreateCodingPractice(practice *models.CodingPractice,
 		playlist_id, created_at, updated_at
 	`
 
-	var new_practice models.CodingPractice
+	var newPractice models.CodingPractice
 
 	err := database.DB.QueryRow(
 		context.Background(),
@@ -30,21 +31,22 @@ func CreateCodingPractice(practice *models.CodingPractice,
 		practice.Description,
 		practice.PlaylistID,
 	).Scan(
-		&new_practice.ID,
-		&new_practice.Title,
-		&new_practice.Description,
-		&new_practice.PlaylistID,
-		&new_practice.CreatedAt,
-		&new_practice.UpdatedAt,
+		&newPractice.ID,
+		&newPractice.Title,
+		&newPractice.Description,
+		&newPractice.PlaylistID,
+		&newPractice.CreatedAt,
+		&newPractice.UpdatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &new_practice, nil
+	return &newPractice, nil
 }
 
+// GetCodingPracticeByID retrieves a practice set by its ID.
 func GetCodingPracticeByID(contestID uuid.UUID,
 ) (*CodingPracticeResponse, error) {
 
@@ -110,6 +112,7 @@ func GetCodingPracticeByID(contestID uuid.UUID,
 	return &practice, nil
 }
 
+// GetCodingPracticesOfPlaylist fetches lists matching a folder identifier.
 func GetCodingPracticesOfPlaylist(playlistID uuid.UUID,
 ) (*[]models.CodingPractice, error) {
 
@@ -155,6 +158,7 @@ func GetCodingPracticesOfPlaylist(playlistID uuid.UUID,
 	return &cps, nil
 }
 
+// GetCodingQuestionByID retrieves a coding problem configuration.
 func GetCodingQuestionByID(questionID uuid.UUID,
 ) (*models.CodingQuestion, error) {
 	query := `
@@ -195,6 +199,7 @@ func GetCodingQuestionByID(questionID uuid.UUID,
 	return &question, nil
 }
 
+// CreateCodingQuestion saves a new coding question.
 func CreateCodingQuestion(question *models.CodingQuestion,
 ) (*models.CodingQuestion, error) {
 
@@ -211,7 +216,7 @@ func CreateCodingQuestion(question *models.CodingQuestion,
 		created_at, updated_at
 	`
 
-	var new_question models.CodingQuestion
+	var newQuestion models.CodingQuestion
 
 	err := database.DB.QueryRow(
 		context.Background(),
@@ -226,27 +231,28 @@ func CreateCodingQuestion(question *models.CodingQuestion,
 		question.TimeLimitMS,
 		question.MemoryLimitMB,
 	).Scan(
-		&new_question.ID,
-		&new_question.ContestID,
-		&new_question.Title,
-		&new_question.Difficulty,
-		&new_question.Statement,
-		&new_question.Constraints,
-		&new_question.InputFormat,
-		&new_question.OutputFormat,
-		&new_question.TimeLimitMS,
-		&new_question.MemoryLimitMB,
-		&new_question.CreatedAt,
-		&new_question.UpdatedAt,
+		&newQuestion.ID,
+		&newQuestion.ContestID,
+		&newQuestion.Title,
+		&newQuestion.Difficulty,
+		&newQuestion.Statement,
+		&newQuestion.Constraints,
+		&newQuestion.InputFormat,
+		&newQuestion.OutputFormat,
+		&newQuestion.TimeLimitMS,
+		&newQuestion.MemoryLimitMB,
+		&newQuestion.CreatedAt,
+		&newQuestion.UpdatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &new_question, nil
+	return &newQuestion, nil
 }
 
+// CreateCodingTestCase saves validation rules for testing code solutions.
 func CreateCodingTestCase(testcase *models.TestCase,
 ) (*models.TestCase, error) {
 
@@ -261,7 +267,7 @@ func CreateCodingTestCase(testcase *models.TestCase,
 		expected_output, is_hidden, created_at
 	`
 
-	var new_testcase models.TestCase
+	var newTestcase models.TestCase
 
 	err := database.DB.QueryRow(
 		context.Background(),
@@ -271,22 +277,23 @@ func CreateCodingTestCase(testcase *models.TestCase,
 		testcase.ExpectedOutput,
 		testcase.IsHidden,
 	).Scan(
-		&new_testcase.ID,
-		&new_testcase.QuestionID,
-		&new_testcase.Input,
-		&new_testcase.ExpectedOutput,
-		&new_testcase.IsHidden,
-		&new_testcase.CreatedAt,
+		&newTestcase.ID,
+		&newTestcase.QuestionID,
+		&newTestcase.Input,
+		&newTestcase.ExpectedOutput,
+		&newTestcase.IsHidden,
+		&newTestcase.CreatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &new_testcase, nil
+	return &newTestcase, nil
 }
 
-func GetSampleTestCases(question_id uuid.UUID,
+// GetSampleTestCases pulls visible validation elements matching a question ID.
+func GetSampleTestCases(questionID uuid.UUID,
 ) (*[]models.TestCase, error) {
 
 	query := `
@@ -300,7 +307,7 @@ func GetSampleTestCases(question_id uuid.UUID,
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		question_id,
+		questionID,
 	)
 
 	if err != nil {
@@ -332,6 +339,7 @@ func GetSampleTestCases(question_id uuid.UUID,
 	return &testcases, nil
 }
 
+// CreateSubmission saves a code submission attempt.
 func CreateSubmission(submission *models.Submission,
 ) (*models.Submission, error) {
 
@@ -346,7 +354,7 @@ func CreateSubmission(submission *models.Submission,
 		updated_at
 	`
 
-	var new_submission models.Submission
+	var newSubmission models.Submission
 
 	err := database.DB.QueryRow(
 		context.Background(),
@@ -356,28 +364,29 @@ func CreateSubmission(submission *models.Submission,
 		submission.Code,
 		submission.Language,
 	).Scan(
-		&new_submission.ID,
-		&new_submission.QuestionID,
-		&new_submission.UserID,
-		&new_submission.Code,
-		&new_submission.Language,
-		&new_submission.Status,
-		&new_submission.PassedCases,
-		&new_submission.TotalCases,
-		&new_submission.Started_At,
-		&new_submission.Finished_At,
-		&new_submission.SubmittedAt,
-		&new_submission.UpdatedAt,
+		&newSubmission.ID,
+		&newSubmission.QuestionID,
+		&newSubmission.UserID,
+		&newSubmission.Code,
+		&newSubmission.Language,
+		&newSubmission.Status,
+		&newSubmission.PassedCases,
+		&newSubmission.TotalCases,
+		&newSubmission.Started_At,
+		&newSubmission.Finished_At,
+		&newSubmission.SubmittedAt,
+		&newSubmission.UpdatedAt,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &new_submission, nil
+	return &newSubmission, nil
 }
 
-func FetchSubmissionStatus(submission_id uuid.UUID,
+// FetchSubmissionStatus reads current verification workflow records.
+func FetchSubmissionStatus(submissionID uuid.UUID,
 ) (*SubmissionStatusResponse, error) {
 
 	query := `
@@ -392,14 +401,14 @@ func FetchSubmissionStatus(submission_id uuid.UUID,
 	err := database.DB.QueryRow(
 		context.Background(),
 		query,
-		submission_id,
+		submissionID,
 	).Scan(
 		&response.ID,
 		&response.Status,
 		&response.PassedCases,
 		&response.TotalCases,
-		&response.Started_At,
-		&response.Finished_At,
+		&response.StartedAt,
+		&response.FinishedAt,
 	)
 
 	if err != nil {
@@ -409,7 +418,8 @@ func FetchSubmissionStatus(submission_id uuid.UUID,
 	return &response, nil
 }
 
-func FetchSubmissionResult(submission_id uuid.UUID,
+// FetchSubmissionResult logs evaluation reports matching an ID.
+func FetchSubmissionResult(submissionID uuid.UUID,
 ) (*[]SubmissionResultResponse, error) {
 
 	query := `
@@ -429,7 +439,7 @@ func FetchSubmissionResult(submission_id uuid.UUID,
 	rows, err := database.DB.Query(
 		context.Background(),
 		query,
-		submission_id,
+		submissionID,
 	)
 
 	if err != nil {
@@ -462,8 +472,9 @@ func FetchSubmissionResult(submission_id uuid.UUID,
 	return &response, nil
 }
 
-func VerifySubmissionOwnership(submission_id uuid.UUID,
-	user_id uuid.UUID,
+// VerifySubmissionOwnership ensures a user owns a given submission.
+func VerifySubmissionOwnership(submissionID uuid.UUID,
+	userID uuid.UUID,
 ) error {
 
 	query := `
@@ -477,7 +488,7 @@ func VerifySubmissionOwnership(submission_id uuid.UUID,
 	return database.DB.QueryRow(
 		context.Background(),
 		query,
-		submission_id,
-		user_id,
+		submissionID,
+		userID,
 	).Scan(&id)
 }
