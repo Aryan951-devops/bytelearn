@@ -9,6 +9,55 @@ import (
 	"github.com/google/uuid"
 )
 
+// OptionalMiddleware attempts to validate the user but allows anonymous access if unauthenticated.
+func OptionalMiddleware() gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+
+		tokenString, err := c.Cookie("access_token")
+		if err != nil {
+			c.Next()
+			return
+		}
+
+		token, err := jwt.Parse(tokenString, func(_ *jwt.Token) (interface{}, error) {
+			return []byte(config.AppConfig.JWTSecret), nil
+		})
+
+		if err != nil || !token.Valid {
+			c.Next()
+			return
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			c.Next()
+			return
+		}
+
+		userIDStr, ok := claims["user_id"].(string)
+		if !ok {
+			c.Next()
+			return
+		}
+
+		parsedUUID, err := uuid.Parse(userIDStr)
+		if err != nil {
+			c.Next()
+			return
+		}
+
+		user, err := GetUserByUserID(parsedUUID)
+		if err != nil {
+			c.Next()
+			return
+		}
+
+		c.Set("user", user)
+		c.Next()
+	}
+}
+
 // Middleware protects routes by validating tokens.
 func Middleware() gin.HandlerFunc {
 

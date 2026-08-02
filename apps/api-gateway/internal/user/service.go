@@ -29,6 +29,10 @@ func ChangePassword(newPassword string, userID uuid.UUID) error {
 	return nil
 }
 
+func GetWatchHistoryService(userID uuid.UUID) (*HistoryResponse, error) {
+	return GetWatchHistory(userID)
+}
+
 // UpdateUserProfile processes user detail changes.
 func UpdateUserProfile(req UpdateAccountRequest, userID uuid.UUID,
 	tempPath *string) (*models.User, error) {

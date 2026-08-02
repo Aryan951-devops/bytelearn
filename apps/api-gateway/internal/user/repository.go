@@ -10,6 +10,56 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetWatchHistory retrieves the watch history for a specific user.
+func GetWatchHistory(userID uuid.UUID) (*HistoryResponse, error) {
+	ctx := context.Background()
+
+	// Fetch videos from watch history, ordered by most recently watched
+	query := `
+		SELECT 
+			v.video_id,
+			v.title,
+			v.thumbnail_url,
+			v.views
+		FROM watch_history wh	
+		INNER JOIN videos v ON v.video_id = wh.video_id
+		WHERE wh.user_id = $1
+		ORDER BY wh.updated_at DESC
+	`
+
+	rows, err := database.DB.Query(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var response HistoryResponse
+	response.UserID = userID
+	response.Videos = []VideoMetadata{}
+
+	for rows.Next() {
+		var video VideoMetadata
+
+		err = rows.Scan(
+			&video.ID,
+			&video.Title,
+			&video.ThumbnailURL,
+			&video.Views,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		response.Videos = append(response.Videos, video)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
 // UpdatePassword changes the password string in the database.
 func UpdatePassword(hashedPassword string, userID uuid.UUID) error {
 

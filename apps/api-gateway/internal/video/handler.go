@@ -77,7 +77,16 @@ func GetVideoHandler(c *gin.Context) {
 		return
 	}
 
-	video, err := GetVideo(videoID)
+	var video *models.Video
+
+	ctxUser, exists := c.Get("user")
+	if exists {
+		user := ctxUser.(*models.User)
+		video, err = GetVideo(videoID, user.ID)
+	} else {
+		video, err = GetVideo(videoID, uuid.Nil)
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.NewResponse(
 			err.Error(),

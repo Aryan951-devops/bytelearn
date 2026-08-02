@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 
 	"github.com/Aryan951-devops/bytelearn/apps/api-gateway/internal/database"
 	"github.com/Aryan951-devops/bytelearn/pkg/models"
@@ -102,7 +103,7 @@ func FetchAllVideos() (*[]models.Video, error) {
 }
 
 // FetchVideoByID finds a single video using its ID.
-func FetchVideoByID(videoID uuid.UUID) (*models.Video, error) {
+func FetchVideoByID(videoID uuid.UUID, userID uuid.UUID) (*models.Video, error) {
 	query := `
 		UPDATE videos
 			SET views = views + 1,
@@ -138,6 +139,31 @@ func FetchVideoByID(videoID uuid.UUID) (*models.Video, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	log.Println("UserID: ", userID)
+
+	if userID != uuid.Nil {
+		watchHistoryQuery := `
+			INSERT INTO watch_history 
+				(user_id, video_id, resume_time, updated_at)
+			VALUES ($1, $2, 0, NOW())
+			ON CONFLICT (user_id, video_id) 
+			DO UPDATE SET 
+				updated_at = NOW();
+		`
+
+		_, err := database.DB.Exec(
+			context.Background(),
+			watchHistoryQuery,
+			userID,
+			videoID,
+		)
+
+		if err != nil {
+			// Log the error and still return the video so viewing isn't blocked by a history error
+			log.Printf("failed to update watch history for user %s: %v", userID, err)
+		}
 	}
 
 	return &video, nil

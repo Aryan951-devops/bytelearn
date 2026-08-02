@@ -37,8 +37,8 @@ func GetAllVideosOfUserService(userID uuid.UUID) (*[]models.Video, error) {
 }
 
 // GetVideo reads a single video profile.
-func GetVideo(videoID uuid.UUID) (*models.Video, error) {
-	video, err := FetchVideoByID(videoID)
+func GetVideo(videoID uuid.UUID, userID uuid.UUID) (*models.Video, error) {
+	video, err := FetchVideoByID(videoID, userID)
 
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func GetVideo(videoID uuid.UUID) (*models.Video, error) {
 
 // DeleteVideo removes a video file record.
 func DeleteVideo(videoID uuid.UUID, userID uuid.UUID) (*models.Video, error) {
-	video, err := FetchVideoByID(videoID)
+	video, err := FetchVideoByID(videoID, uuid.Nil)
 
 	if err != nil {
 		return nil, errors.New("Internal Server Error")
@@ -125,7 +125,7 @@ func UploadVideo(req UploadVideoRequest, userID uuid.UUID,
 func UpdateVideo(req UpdateVideoRequest, userID uuid.UUID,
 	videoID uuid.UUID, tempPath *string) (*models.Video, error) {
 
-	video, err := GetVideo(videoID)
+	video, err := GetVideo(videoID, uuid.Nil)
 	if err != nil {
 		return nil, err
 	}

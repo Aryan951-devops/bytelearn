@@ -166,3 +166,42 @@ func UpdateAccountHandler(c *gin.Context) {
 		gin.H{"user": updatedUser},
 	))
 }
+
+// GetWatchHistory returns the watch history of the user.
+func GetWatchHistoryHandler(c *gin.Context) {
+
+	ctxUser, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, utils.NewResponse(
+			"unauthorized",
+			nil,
+		))
+		return
+	}
+
+	user, ok := ctxUser.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			"Internal context type mismatch",
+			nil,
+		))
+		return
+	}
+
+	historyResponse, err := GetWatchHistoryService(user.ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			err.Error(),
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"watch history fetched successfully",
+		historyResponse,
+	),
+	)
+
+}

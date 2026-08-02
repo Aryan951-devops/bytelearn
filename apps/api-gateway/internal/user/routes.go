@@ -14,4 +14,5 @@ func RegisterRoutes(router *gin.RouterGroup) {
 	user.POST("/change-password", ChangePasswordHandler)
 	user.GET("/current-user", GetUserHandler)
 	user.PATCH("/update-account", UpdateAccountHandler)
+	user.GET("/watch-history", GetWatchHistoryHandler)
 }
