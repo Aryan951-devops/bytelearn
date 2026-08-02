@@ -58,6 +58,11 @@ export function Navbar() {
           My playlists
         </NavLink>
       ) : null}
+      {isAuthenticated ? (
+        <NavLink to="/watch-history" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+          Watch history
+        </NavLink>
+      ) : null}
       {isAuthenticated && user?.role === 'admin' ? (
         <NavLink to="/admin/courses" className={navLinkClass} onClick={() => setMobileOpen(false)}>
           Admin

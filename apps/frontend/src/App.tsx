@@ -10,6 +10,7 @@ import { RegisterPage } from '@/pages/RegisterPage'
 import { VideosPage } from '@/pages/VideosPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { SettingsPage } from '@/pages/SettingsPage'
+import { WatchHistoryPage } from '@/pages/WatchHistoryPage'
 import { EducatorDashboard } from '@/pages/EducatorDashboard'
 import { CourseDetailPage } from '@/pages/CourseDetailPage'
 import { CoursePlaylistPage } from '@/pages/CoursePlaylistPage'
@@ -97,6 +98,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <MyPlaylistsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="watch-history"
+                element={
+                  <ProtectedRoute>
+                    <WatchHistoryPage />
                   </ProtectedRoute>
                 }
               />

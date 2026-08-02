@@ -16,6 +16,7 @@ import type {
   TestCase,
   User,
   Video,
+  WatchHistoryResponse,
   QuizSummary,
   CreateQuizQuestionInput,
   StartQuizResponse,
@@ -88,6 +89,8 @@ export const userApi = {
       method: 'PATCH',
       body: form,
     }),
+
+  getWatchHistory: () => request<WatchHistoryResponse>('/user/watch-history'),
 }
 
 export const courseApi = {

@@ -33,6 +33,11 @@ export interface VideoMetadata {
   views: number
 }
 
+export interface WatchHistoryResponse {
+  user_id: string
+  videos: VideoMetadata[]
+}
+
 export interface Course {
   course_id: string
   title: string
