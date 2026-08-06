@@ -13,6 +13,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { NavbarSearch } from '@/components/layout/NavbarSearch'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
@@ -78,20 +79,24 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-ink-200/50 bg-cream-50/80 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/80">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2 font-display text-lg font-semibold text-sage-700 dark:text-sage-300"
+          className="flex shrink-0 items-center gap-2 font-display text-lg font-semibold text-sage-700 dark:text-sage-300"
         >
           <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sage-500 to-mist-500 text-white shadow-md">
             <GraduationCap className="size-5" />
           </span>
-          ByteLearn
+          <span className="hidden sm:inline">ByteLearn</span>
         </Link>
 
+        <div className="min-w-0 flex-1 max-w-md">
+          <NavbarSearch onSearch={() => setMobileOpen(false)} />
+        </div>
+
         {/* Desktop Links */}
-        <div className="hidden items-center gap-1 md:flex">{links}</div>
+        <div className="hidden shrink-0 items-center gap-1 lg:flex">{links}</div>
 
         {/* Right side controls */}
         <div className="flex items-center gap-2 sm:gap-3">
@@ -183,7 +188,7 @@ export function Navbar() {
 
           <button
             type="button"
-            className="rounded-lg p-2 text-ink-600 md:hidden dark:text-ink-300"
+            className="rounded-lg p-2 text-ink-600 lg:hidden dark:text-ink-300"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
@@ -194,7 +199,7 @@ export function Navbar() {
 
       {/* Mobile Menu View */}
       {mobileOpen ? (
-        <div className="border-t border-ink-200/50 px-4 py-4 md:hidden dark:border-ink-800">
+        <div className="border-t border-ink-200/50 px-4 py-4 lg:hidden dark:border-ink-800">
           <div className="flex flex-col gap-1">{links}</div>
           <div className="mt-4 flex flex-col gap-2 border-t border-ink-200/50 pt-4 dark:border-ink-800">
             {isAuthenticated ? (

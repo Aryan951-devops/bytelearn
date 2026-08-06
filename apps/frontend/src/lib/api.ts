@@ -16,6 +16,7 @@ import type {
   TestCase,
   User,
   Video,
+  VideoMetadata,
   WatchHistoryResponse,
   QuizSummary,
   CreateQuizQuestionInput,
@@ -199,6 +200,11 @@ export const videoApi = {
     request<{ video: Video }>(`/video/${videoId}`, {
       method: 'DELETE',
     }),
+
+  search: (query: string) =>
+    request<{ videos: VideoMetadata[] }>(
+      `/video/search/${encodeURIComponent(query)}`,
+    ),
 }
 
 export const commentApi = {

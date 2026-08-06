@@ -8,6 +8,7 @@ import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { VideosPage } from '@/pages/VideosPage'
+import { VideoSearchPage } from '@/pages/VideoSearchPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { WatchHistoryPage } from '@/pages/WatchHistoryPage'
@@ -92,6 +93,7 @@ export default function App() {
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
               <Route path="videos" element={<VideosPage />} />
+              <Route path="search" element={<VideoSearchPage />} />
 
               <Route
                 path="my-playlists"
