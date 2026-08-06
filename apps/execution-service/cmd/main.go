@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"runtime"
 	"time"
@@ -36,7 +37,7 @@ func main() {
 
 		for {
 
-			job, err := redisClient.Consume(
+			payload, err := redisClient.Consume(
 				ctx,
 				constants.SubmissionQueue,
 			)
@@ -47,7 +48,15 @@ func main() {
 				continue
 			}
 
-			jobs <- job
+			var job models.SubmissionJob
+
+			if err := json.Unmarshal(payload, &job); err != nil {
+				log.Println(err)
+				time.Sleep(1 * time.Second)
+				continue
+			}
+
+			jobs <- &job
 		}
 	}()
 

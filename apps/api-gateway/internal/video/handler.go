@@ -309,3 +309,21 @@ func UpdateVideoHandler(c *gin.Context) {
 		gin.H{"user": updatedVideo},
 	))
 }
+
+// It handles the video recommendation logic.
+func GetVideosBySearchHandler(c *gin.Context) {
+	searchText := c.Param("searchText")
+	videos, err := GetVideosBySearchService(searchText)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.NewResponse(
+			err.Error(), nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.NewResponse(
+		"videos searched successfully",
+		gin.H{"videos": videos},
+	))
+}

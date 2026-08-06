@@ -284,3 +284,38 @@ func UpdateVideoByID(video *models.Video) (*models.Video, error) {
 
 	return &updatedVideo, nil
 }
+
+// Fetches Video MetaData on the basis of videoIDs.
+func FetchVideoMetaData(videoIDs []uuid.UUID) (*[]VideoMetadata, error) {
+	query := `
+		SELECT video_id, title, thumbnail_url, views
+		FROM videos
+		WHERE video_id = ANY($1);
+	`
+
+	rows, err := database.DB.Query(context.Background(), query, videoIDs)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	defer rows.Close()
+
+	videos := []VideoMetadata{}
+
+	for rows.Next() {
+		var v VideoMetadata
+
+		err := rows.Scan(
+			&v.ID,
+			&v.Title,
+			&v.Thumbnail_Url,
+			&v.Views,
+		)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+
+		videos = append(videos, v)
+	}
+
+	return &videos, nil
+}

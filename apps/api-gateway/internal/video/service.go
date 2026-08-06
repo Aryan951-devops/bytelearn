@@ -1,8 +1,12 @@
 package video
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -118,7 +122,28 @@ func UploadVideo(req UploadVideoRequest, userID uuid.UUID,
 		UploadedBy:         userID,
 	}
 
-	return CreateVideo(video)
+	res, err := CreateVideo(video)
+
+	if err != nil {
+		return nil, err
+	}
+
+	job := models.RecommendationJob{
+		VidoeID:   res.ID,
+		EventType: "video_created",
+	}
+
+	err = config.AppConfig.RedisClient.Publish(
+		context.Background(),
+		"recommendation_jobs",
+		job,
+	)
+
+	if err != nil {
+		fmt.Println("Got Error while publishing job to Redis")
+	}
+
+	return res, err
 }
 
 // UpdateVideo processes requests to edit video descriptions.
@@ -160,4 +185,98 @@ func UpdateVideo(req UpdateVideoRequest, userID uuid.UUID,
 	}
 
 	return updatedVideo, nil
+}
+
+var httpClient = &http.Client{
+	Timeout: 5 * time.Second,
+}
+
+// CreateNewHttpRequest creates a new HTTP request with the searchText.
+func CreateNewHttpRequest(searchText string,
+) (*http.Request, error) {
+
+	reqURL, err := url.Parse(fmt.Sprintf("%s/search",
+		config.AppConfig.RecommendationURL))
+	if err != nil {
+		return nil, fmt.Errorf("invalid recommendation service url: %w", err)
+	}
+
+	query := reqURL.Query()
+	query.Set("q", searchText)
+	query.Set("limit", "10")
+	reqURL.RawQuery = query.Encode()
+
+	req, err := http.NewRequestWithContext(context.Background(),
+		http.MethodGet, reqURL.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return req, nil
+}
+
+// Returns the recommended videos while searching.
+func GetVideosBySearchService(searchText string,
+) (*[]VideoMetadata, error) {
+
+	if searchText == "" {
+		return &[]VideoMetadata{}, nil
+	}
+
+	req, err := CreateNewHttpRequest(searchText)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error calling recommendation service: %w", err)
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("recommendation service returned status code %d", resp.StatusCode)
+	}
+
+	var recResp RecommendationSearchResponse
+	if err = json.NewDecoder(resp.Body).Decode(&recResp); err != nil {
+		return nil, fmt.Errorf("failed to decode recommendation response: %w", err)
+	}
+
+	if len(recResp.Results) == 0 {
+		return &[]VideoMetadata{}, nil
+	}
+
+	fmt.Println("Hey Response: ", recResp)
+	videoIDs := make([]uuid.UUID, 0, recResp.Count)
+	orderMap := make(map[uuid.UUID]int, recResp.Count)
+
+	for index, item := range recResp.Results {
+		videoIDs = append(videoIDs, item.VideoID)
+		orderMap[item.VideoID] = index
+	}
+
+	fmt.Println("videoIDs: ", videoIDs)
+	videos, err := FetchVideoMetaData(videoIDs)
+	if err != nil {
+		fmt.Println("Err: ", err)
+		return nil, err
+	}
+
+	fetchedMap := make(map[uuid.UUID]VideoMetadata, len(videoIDs))
+	for _, video := range *videos {
+		fetchedMap[video.ID] = video
+	}
+
+	orderedVideos := make([]VideoMetadata, 0, len(fetchedMap))
+	for _, id := range videoIDs {
+		if video, exists := fetchedMap[id]; exists {
+			orderedVideos = append(orderedVideos, video)
+		}
+	}
+
+	return &orderedVideos, nil
 }

@@ -38,6 +38,11 @@ type Video struct {
 	UpdatedAt          time.Time `json:"updated_at"`
 }
 
+type RecommendationJob struct {
+	VidoeID   uuid.UUID `json:"video_id"`
+	EventType string    `json:"event_type"`
+}
+
 type Comment struct {
 	ID        uuid.UUID `json:"comment_id"`
 	VideoID   uuid.UUID `json:"video_id"`

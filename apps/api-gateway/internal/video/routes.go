@@ -14,6 +14,7 @@ func RegisterRoutes(router *gin.RouterGroup) {
 	video.GET("/all", GetAllVideosHandler)
 	video.GET("/upload/signature", auth.Middleware(), GenerateUploadSignatureHandler)
 	video.POST("/upload", auth.Middleware(), UploadVideoHandler)
+	video.GET("/search/:searchText", GetVideosBySearchHandler)
 	video.GET("/:videoID", auth.OptionalMiddleware(), GetVideoHandler)
 	video.PATCH("/:videoID", auth.Middleware(), UpdateVideoHandler)
 	video.DELETE("/:videoID", auth.Middleware(), DeleteVideoHandler)

@@ -20,14 +20,15 @@ type CloudinaryConfig struct {
 
 // Config manages overall application system variables.
 type Config struct {
-	RedisClient    *redis.Client
-	Port           string
-	DatabaseURL    string
-	JWTSecret      string
-	AllowedOrigins string
-	RedisAddr      string
-	Cloudinary     CloudinaryConfig
-	MediaUploader  mediauploader.MediaUploader
+	RedisClient       *redis.Client
+	Port              string
+	DatabaseURL       string
+	RecommendationURL string
+	JWTSecret         string
+	AllowedOrigins    string
+	RedisAddr         string
+	Cloudinary        CloudinaryConfig
+	MediaUploader     mediauploader.MediaUploader
 }
 
 // AppConfig stores the globally accessible configurations.
@@ -41,11 +42,12 @@ func LoadConfig() {
 	}
 
 	AppConfig = Config{
-		Port:           getEnv("PORT", "8080"),
-		DatabaseURL:    getEnv("DATABASE_URL", ""),
-		JWTSecret:      getEnv("JWT_SECRET", ""),
-		AllowedOrigins: getEnv("ALLOWED_ORIGINS", ""),
-		RedisAddr:      getEnv("REDIS_ADDR", "localhost:6789"),
+		Port:              getEnv("PORT", "8080"),
+		DatabaseURL:       getEnv("DATABASE_URL", ""),
+		RecommendationURL: getEnv("RECOMMENDATION_URL", "localhost:8001"),
+		JWTSecret:         getEnv("JWT_SECRET", ""),
+		AllowedOrigins:    getEnv("ALLOWED_ORIGINS", ""),
+		RedisAddr:         getEnv("REDIS_ADDR", "localhost:6379"),
 		Cloudinary: CloudinaryConfig{
 			CloudinaryCloudName: getEnv("CLOUDINARY_CLOUD_NAME", ""),
 			CloudinaryAPIKey:    getEnv("CLOUDINARY_API_KEY", ""),

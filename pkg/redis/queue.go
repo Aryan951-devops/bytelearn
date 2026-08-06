@@ -3,14 +3,12 @@ package redis
 import (
 	"context"
 	"encoding/json"
-
-	"github.com/Aryan951-devops/bytelearn/pkg/models"
 )
 
 func (c *Client) Publish(
 	ctx context.Context,
 	queue string,
-	job models.SubmissionJob,
+	job any,
 ) error {
 
 	payload, err := json.Marshal(job)
@@ -29,7 +27,7 @@ func (c *Client) Publish(
 func (c *Client) Consume(
 	ctx context.Context,
 	queue string,
-) (*models.SubmissionJob, error) {
+) ([]byte, error) {
 
 	result, err := c.BRPop(
 		ctx,
@@ -41,16 +39,5 @@ func (c *Client) Consume(
 		return nil, err
 	}
 
-	var job models.SubmissionJob
-
-	err = json.Unmarshal(
-		[]byte(result[1]),
-		&job,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &job, nil
+	return []byte(result[1]), nil
 }
