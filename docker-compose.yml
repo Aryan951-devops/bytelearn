@@ -36,6 +36,20 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_ADDR=redis:6379
 
+  recommendation-service:
+    image: ${DOCKERHUB_USER}/bytelearn-recommendation:latest
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_QUEUE=${REDIS_QUEUE}
+      - GATEWAY_INTERNAL_URL=${GATEWAY_INTERNAL_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - WORKER_CONCURRENCY=${WORKER_CONCURRENCY}
+
   frontend:
     image: ${DOCKERHUB_USER}/bytelearn-frontend:latest
     restart: always

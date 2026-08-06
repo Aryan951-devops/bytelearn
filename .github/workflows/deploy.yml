@@ -60,3 +60,11 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bytelearn-frontend:latest
           build-args: |
             VITE_API_BASE=${{ vars.VITE_API_BASE }}
+
+      - name: Build & Push Recommendation Service Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/recommendation-service/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bytelearn-recommendation:latest
