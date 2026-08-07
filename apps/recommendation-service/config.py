@@ -8,7 +8,7 @@ class Config:
     REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
     REDIS_QUEUE = os.getenv("REDIS_QUEUE", "recommendation_jobs")
     
-    DATABASE_URL = os.getenv("DATABASE_URL", "")
+    RECOMMENDATION_DATABASE_URL = os.getenv("RECOMMENDATION_DATABASE_URL", "")
     API_GATEWAY_URL = os.getenv("API_GATEWAY_URL", "http://localhost:8080/api/v1")
     
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")

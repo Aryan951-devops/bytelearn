@@ -20,7 +20,7 @@ def main():
 
     embedder = VectorEmbedder(Config.EMBEDDING_MODEL)
 
-    repo = EmbeddingRepository(Config.DATABASE_URL)
+    repo = EmbeddingRepository(Config.RECOMMENDATION_DATABASE_URL)
 
     service = RecommendationService(
         repo,
