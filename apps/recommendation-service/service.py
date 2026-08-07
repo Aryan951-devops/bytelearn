@@ -58,7 +58,7 @@ class RecommendationService:
 
     def _fetch_video_metadata(self, video_id: uuid.UUID) -> dict | None:
         try:
-            time.sleep(10) # for testing only. Need to remove this while pushing
+            # time.sleep(10) # for testing only. Need to remove this while pushing
             url = f"{self.api_gateway_url}/video/{video_id}"
             logger.info("Calling Gateway: %s", url)
 
