@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func RunPythonContainer(submissionData *utils.SubmissionData,
+func RunGoContainer(submissionData *utils.SubmissionData,
 	testcases []models.TestCase,
 ) ([]models.SubmissionResults, error) {
 
@@ -35,7 +35,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 
 	sourceFile := filepath.Join(
 		workspace,
-		"main.py",
+		"main.go",
 	)
 
 	if err := os.WriteFile(
@@ -74,7 +74,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 		"-v",
 		fmt.Sprintf("%s:/workspace", workspace),
 
-		"judge-python",
+		"judge-go",
 
 		"tail",
 		"-f",
@@ -99,6 +99,40 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 			containerName,
 		).Run()
 	}()
+
+	buildCmd := exec.Command(
+		"docker",
+		"exec",
+		containerName,
+		"go",
+		"build",
+		"-o",
+		"/workspace/main",
+		"/workspace/main.go",
+	)
+
+	var buildStdout bytes.Buffer
+	var buildStderr bytes.Buffer
+
+	buildCmd.Stdout = &buildStdout
+	buildCmd.Stderr = &buildStderr
+
+	if buildErr := buildCmd.Run(); buildErr != nil {
+		errorOutput := strings.TrimSpace(buildStderr.String())
+		log.Println("Compilation failed:", errorOutput)
+
+		results := make([]models.SubmissionResults, 0, len(testcases))
+		for _, tc := range testcases {
+			results = append(results, models.SubmissionResults{
+				SubmissionID: submissionData.ID,
+				TestCaseID:   tc.ID,
+				ErrorOutput:  &errorOutput,
+				IsPassed:     false,
+				Verdict:      constants.VerdictCompilationError,
+			})
+		}
+		return results, nil
+	}
 
 	results := make(
 		[]models.SubmissionResults,
@@ -125,8 +159,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 
 			containerName,
 
-			"python3",
-			"/workspace/main.py",
+			"/workspace/main",
 		)
 
 		cmd.Stdin = strings.NewReader(tc.Input)

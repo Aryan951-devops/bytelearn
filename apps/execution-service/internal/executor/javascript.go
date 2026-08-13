@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func RunPythonContainer(submissionData *utils.SubmissionData,
+func RunJavaScriptContainer(submissionData *utils.SubmissionData,
 	testcases []models.TestCase,
 ) ([]models.SubmissionResults, error) {
 
@@ -35,7 +35,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 
 	sourceFile := filepath.Join(
 		workspace,
-		"main.py",
+		"main.js",
 	)
 
 	if err := os.WriteFile(
@@ -74,7 +74,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 		"-v",
 		fmt.Sprintf("%s:/workspace", workspace),
 
-		"judge-python",
+		"judge-js",
 
 		"tail",
 		"-f",
@@ -125,8 +125,8 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 
 			containerName,
 
-			"python3",
-			"/workspace/main.py",
+			"node",
+			"/workspace/main.js",
 		)
 
 		cmd.Stdin = strings.NewReader(tc.Input)

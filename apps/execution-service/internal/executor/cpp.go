@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func RunPythonContainer(submissionData *utils.SubmissionData,
+func RunCppContainer(submissionData *utils.SubmissionData,
 	testcases []models.TestCase,
 ) ([]models.SubmissionResults, error) {
 
@@ -35,7 +35,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 
 	sourceFile := filepath.Join(
 		workspace,
-		"main.py",
+		"main.cpp",
 	)
 
 	if err := os.WriteFile(
@@ -74,7 +74,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 		"-v",
 		fmt.Sprintf("%s:/workspace", workspace),
 
-		"judge-python",
+		"judge-cpp",
 
 		"tail",
 		"-f",
@@ -99,6 +99,37 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 			containerName,
 		).Run()
 	}()
+
+	compileCtx, compileCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer compileCancel()
+
+	compileCmd := exec.CommandContext(
+		compileCtx,
+		"docker", "exec",
+		containerName,
+		"g++", "-O2", "/workspace/main.cpp", "-o", "/workspace/solution",
+	)
+
+	var compileStderr bytes.Buffer
+	compileCmd.Stderr = &compileStderr
+
+	if err := compileCmd.Run(); err != nil {
+		compileErrStr := strings.TrimSpace(compileStderr.String())
+		log.Printf("Compilation Error for submission %s: %s", submissionData.ID, compileErrStr)
+
+		// Return Compilation Error verdict for all test cases
+		results := make([]models.SubmissionResults, 0, len(testcases))
+		for _, tc := range testcases {
+			results = append(results, models.SubmissionResults{
+				SubmissionID: submissionData.ID,
+				TestCaseID:   tc.ID,
+				ErrorOutput:  &compileErrStr,
+				IsPassed:     false,
+				Verdict:      constants.VerdictCompilationError,
+			})
+		}
+		return results, nil
+	}
 
 	results := make(
 		[]models.SubmissionResults,
@@ -125,8 +156,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 
 			containerName,
 
-			"python3",
-			"/workspace/main.py",
+			"/workspace/solution",
 		)
 
 		cmd.Stdin = strings.NewReader(tc.Input)

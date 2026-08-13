@@ -54,6 +54,27 @@ func ExecuteSubmission(
 			testcases,
 		)
 
+	case "cpp":
+
+		results, err = RunCppContainer(
+			submissionData,
+			testcases,
+		)
+
+	case "go":
+
+		results, err = RunGoContainer(
+			submissionData,
+			testcases,
+		)
+
+	case "javascript":
+
+		results, err = RunJavaScriptContainer(
+			submissionData,
+			testcases,
+		)
+
 	default:
 
 		return fmt.Errorf(
