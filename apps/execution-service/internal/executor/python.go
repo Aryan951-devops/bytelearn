@@ -27,7 +27,7 @@ func RunPythonContainer(submissionData *utils.SubmissionData,
 		"submission-"+uuid.NewString(),
 	)
 
-	if err := os.MkdirAll(workspace, 0755); err != nil {
+	if err := os.MkdirAll(workspace, 0777); err != nil {
 		return nil, err
 	}
 
